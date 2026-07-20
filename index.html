@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iZeroPDF - Free Offline PDF & Image Toolkit | 100% Private</title>
+    
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="google5b988d9348ce5c94.html" />
+    
+    <!-- Base tag - adjust based on your deployment -->
+    <base href="/">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="iZeroPDF - Free 100% offline PDF & Image Toolkit. Merge, split, compress, convert PDFs and images. All processing in your browser. No uploads, completely private.">
+    <meta name="keywords" content="PDF toolkit, offline PDF, merge PDF, split PDF, compress PDF, PDF to image, image to PDF, free PDF tools, browser-based PDF, privacy first">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://i-zero-pdf.vercel.app/" />
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="iZeroPDF - Free Offline PDF & Image Toolkit">
+    <meta property="og:description" content="100% private, offline PDF and Image toolkit. Merge, split, compress, convert. All processing in your browser - nothing is uploaded.">
+    <meta property="og:url" content="https://i-zero-pdf.vercel.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://i-zero-pdf.vercel.app/assets/icons/og-image.png">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="iZeroPDF - Free Offline PDF & Image Toolkit">
+    <meta name="twitter:description" content="100% private, offline PDF and Image toolkit. All processing in your browser - nothing is uploaded.">
+    <meta name="twitter:image" content="https://i-zero-pdf.vercel.app/assets/icons/og-image.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon_io/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/favicon_io/apple-touch-icon.png">
+    <link rel="manifest" href="assets/icons/favicon_io/site.webmanifest">
+    <link rel="shortcut icon" href="assets/icons/favicon_io/favicon.ico">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7c3aed">
+    
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "iZeroPDF",
+      "description": "Free 100% offline PDF and Image Toolkit. Merge, split, compress, convert PDFs and images.",
+      "applicationCategory": "Utility",
+      "browserRequirements": "Requires modern browser with JavaScript enabled",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "operatingSystem": "All",
+      "url": "https://i-zero-pdf.vercel.app/"
+    }
+    </script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/theme-light.css" id="themeStyles">
+    
+    <!-- Icon Libraries -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <!-- ============================================
+         CACHE CONSENT DIALOG
+    ============================================ -->
+    <div id="cacheConsentDialog" class="cache-consent-overlay">
+        <div class="cache-consent-modal">
+            <div class="cache-consent-header">
+                <span class="cache-consent-icon material-symbols-outlined">storage</span>
+                <h2>Enable Offline Cache?</h2>
+            </div>
+            
+            <div class="cache-consent-body">
+                <p>iZeroPDF uses your browser's cache to provide a better experience. Here is what we store:</p>
+                
+                <div class="cache-features">
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">history</span>
+                        <div>
+                            <strong>Conversion History</strong>
+                            <span>Keep track of all files you have converted</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">bolt</span>
+                        <div>
+                            <strong>Faster Loading</strong>
+                            <span>Tool assets load instantly on repeat visits</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">trending_up</span>
+                        <div>
+                            <strong>Usage Statistics</strong>
+                            <span>Track your total conversions and visits</span>
+                        </div>
+                    </div>
+                    <div class="cache-feature">
+                        <span class="cache-feature-icon material-symbols-outlined">lock</span>
+                        <div>
+                            <strong>100% Private</strong>
+                            <span>All data stays on your device. Nothing is uploaded.</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="cache-privacy-note">
+                    <span class="material-symbols-outlined">shield</span>
+                    <div>
+                        <strong>Privacy First:</strong>
+                        We never upload or store your files on any server. 
+                        All data is stored locally in your browser's cache.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cache-consent-footer">
+                <button class="btn btn-secondary" id="declineCacheBtn">
+                    <span class="material-symbols-outlined">close</span> Decline
+                </button>
+                <button class="btn btn-primary" id="acceptCacheBtn">
+                    <span class="material-symbols-outlined">check</span> Accept & Continue
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         PREMIUM NAVIGATION
+    ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" data-tool="home" class="nav-brand">
+                <!-- Custom Logo Images -->
+                <img src="assets/icons/logo-light.png" alt="iZeroPDF Logo" class="logo logo-light">
+                <img src="assets/icons/logo-dark.png" alt="iZeroPDF Logo" class="logo logo-dark">
+                <span class="brand-text">iZeroPDF</span>
+                <span class="offline-badge">
+                    <span class="dot"></span>
+                    Offline
+                </span>
+            </a>
+            
+            <ul class="nav-links">
+                <li><a href="#" data-tool="home" class="nav-link active">Home</a></li>
+                <li><a href="#" data-tool="merge" class="nav-link">Tools</a></li>
+            </ul>
+            
+            <div class="nav-controls">
+                <div class="nav-clock">
+                    <span class="material-symbols-outlined">schedule</span>
+                    <span id="clockDisplay">--:--:--</span>
+                </div>
+                
+                <div class="nav-stat">
+                    <span class="material-symbols-outlined">visibility</span>
+                    <span id="visitCount">0</span>
+                </div>
+                
+                <div class="nav-stat">
+                    <span class="material-symbols-outlined">description</span>
+                    <span id="fileCount">0</span>
+                </div>
+                
+                <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         MAIN CONTENT
+    ============================================ -->
+    <main id="appContainer" class="container">
+        <section id="page-home" class="page active">
+            <!-- ============================================
+                 HERO SECTION
+            ============================================ -->
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>
+                        Your <span class="highlight">PDF</span> &<br>
+                        <span class="highlight">Image</span> Toolkit
+                    </h1>
+                    
+                    <p class="hero-subtitle">
+                        <span>100% private</span>
+                        <span class="separator">•</span>
+                        <span>No uploads</span>
+                        <span class="separator">•</span>
+                        <span>Works offline</span>
+                    </p>
+                    
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-lg" onclick="document.getElementById('popular-tools').scrollIntoView({behavior:'smooth'})">
+                            <span class="material-symbols-outlined">arrow_downward</span> Explore Tools
+                        </button>
+                        <button class="btn btn-outline btn-lg" onclick="Router.navigate('merge')">
+                            <span class="material-symbols-outlined">merge</span> Merge PDF
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hero-visual">
+                    <div class="hero-shape"></div>
+                    <div class="hero-pdf-icon">
+                        <!-- Custom PDF Icons -->
+                        <img src="assets/icons/pdf-icon-light.png" alt="PDF Icon" class="pdf-icon pdf-icon-light">
+                        <img src="assets/icons/pdf-icon-dark.png" alt="PDF Icon" class="pdf-icon pdf-icon-dark">
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 POPULAR TOOLS
+            ============================================ -->
+            <div class="section-header" id="popular-tools">
+                <h2>Popular Tools</h2>
+                <p>Most used tools by our community</p>
+            </div>
+            
+            <div class="tools-grid popular-grid">
+                <div class="tool-card popular" data-tool="merge">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">merge</span>
+                        <h3>Merge PDF</h3>
+                        <p>Combine multiple PDF files into one unified document</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="split">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">call_split</span>
+                        <h3>Split PDF</h3>
+                        <p>Split a PDF into multiple files</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="compress">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">compress</span>
+                        <h3>Compress PDF</h3>
+                        <p>Reduce PDF file size without quality loss</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="pdf-to-image">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">picture_as_pdf</span>
+                        <h3>PDF to Images</h3>
+                        <p>Convert PDF pages to images</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="image-to-pdf">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">image</span>
+                        <h3>Images to PDF</h3>
+                        <p>Convert images to a single PDF</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="rotate">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">rotate_right</span>
+                        <h3>Rotate PDF</h3>
+                        <p>Rotate pages left or right</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="organize-pdf">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">reorder</span>
+                        <h3>Reorder Pages</h3>
+                        <p>Rearrange pages in any order</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="extract">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">extract</span>
+                        <h3>Extract Pages</h3>
+                        <p>Extract selected pages from PDF</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="remove-pages">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">delete</span>
+                        <h3>Remove Pages</h3>
+                        <p>Remove unwanted pages from PDF</p>
+                    </div>
+                </div>
+                <div class="tool-card popular" data-tool="lock">
+                    <div class="tool-card-inner">
+                        <span class="tool-badge">★ Popular</span>
+                        <span class="tool-icon material-symbols-outlined">lock</span>
+                        <h3>Protect PDF</h3>
+                        <p>Add password protection to PDF</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 PDF TOOLS SECTION
+            ============================================ -->
+            <div class="category-section" id="pdf-tools">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon material-symbols-outlined">picture_as_pdf</span>
+                        <h2>PDF Tools</h2>
+                    </div>
+                    <p>Complete toolkit for managing and editing your PDF documents</p>
+                </div>
+                
+                <div class="tools-grid">
+                    <div class="tool-card" data-tool="merge">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">merge</span>
+                            <h3>Merge PDF</h3>
+                            <p>Combine multiple PDF files into one unified document</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="split">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">call_split</span>
+                            <h3>Split PDF</h3>
+                            <p>Split a PDF into multiple files</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="pdf-to-image">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">picture_as_pdf</span>
+                            <h3>PDF to Images</h3>
+                            <p>Convert PDF pages to images</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="pdf-to-jpg">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">photo</span>
+                            <h3>PDF to JPG</h3>
+                            <p>Convert PDF to JPG images</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="rotate">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">rotate_right</span>
+                            <h3>Rotate PDF</h3>
+                            <p>Rotate pages left or right</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="extract-images">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">image_search</span>
+                            <h3>Extract Images</h3>
+                            <p>Extract images from PDF</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="compress">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">compress</span>
+                            <h3>Compress PDF</h3>
+                            <p>Reduce PDF file size without quality loss</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="organize-pdf">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">reorder</span>
+                            <h3>Organize PDF</h3>
+                            <p>Reorder & manage pages</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="lock">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">lock</span>
+                            <h3>Lock PDF</h3>
+                            <p>Add password protection to PDF</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="remove-pages">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">delete</span>
+                            <h3>Remove Pages</h3>
+                            <p>Remove unwanted pages from PDF</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ============================================
+                 IMAGE TOOLS SECTION
+            ============================================ -->
+            <div class="category-section" id="image-tools">
+                <div class="category-header">
+                    <div class="category-title">
+                        <span class="category-icon material-symbols-outlined">image</span>
+                        <h2>Image Tools</h2>
+                    </div>
+                    <p>Powerful utilities to optimize, crop, resize, and convert images</p>
+                </div>
+                
+                <div class="tools-grid">
+                    <div class="tool-card" data-tool="resize">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">aspect_ratio</span>
+                            <h3>Resize Image</h3>
+                            <p>Resize images to custom dimensions</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="compress-image">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">compress</span>
+                            <h3>Compress Image</h3>
+                            <p>Reduce image size without losing quality</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="image-converter">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">swap_horiz</span>
+                            <h3>Convert Image</h3>
+                            <p>Convert images to JPEG, PNG, WebP, etc.</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="crop">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">crop</span>
+                            <h3>Crop Image</h3>
+                            <p>Crop images to the perfect size</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="rotate-image">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">rotate_right</span>
+                            <h3>Rotate Image</h3>
+                            <p>Rotate images in any direction</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="watermark">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">watermark</span>
+                            <h3>Watermark Image</h3>
+                            <p>Add text or logo watermarks</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="photo-resizer">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">photo_camera</span>
+                            <h3>Photo Resizer</h3>
+                            <p>ID, Social Media & more</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div id="toolContent"></div>
+        
+        <!-- Page Content Container for Footer Pages -->
+        <section id="page-content-container" class="page" style="display:none;">
+            <div id="pageContent"></div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- ============================================
+         FOOTER
+    ============================================ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <!-- Custom Footer Logo -->
+                <img src="assets/icons/logo-light.png" alt="iZeroPDF Logo" class="footer-logo footer-logo-light">
+                <img src="assets/icons/logo-dark.png" alt="iZeroPDF Logo" class="footer-logo footer-logo-dark">
+                <span class="footer-brand-text">iZeroPDF</span>
+                <span class="footer-version">v2.0.0</span>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#" class="footer-link" data-page="privacy">Privacy</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="open-source">Open Source</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="github">GitHub</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="license">License</a>
+                <span class="footer-divider">·</span>
+                <a href="#" class="footer-link" data-page="support">Support</a>
+            </div>
+            
+            <p class="footer-copy">
+                Your files stay on your device. No data is ever uploaded.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <!-- Utils -->
+    <script src="js/utils/validators.js"></script>
+    <script src="js/utils/fileHelpers.js"></script>
+    <script src="js/utils/canvasHelpers.js"></script>
+    <script src="js/utils/zipHelpers.js"></script>
+    <script src="js/utils/downloadHelpers.js"></script>
+    
+    <!-- Core Engines -->
+    <script src="js/core/pdfProcessor.js"></script>
+    <script src="js/core/imageProcessor.js"></script>
+    <script src="js/core/cropEngine.js"></script>
+    <script src="js/core/mergeEngine.js"></script>
+    <script src="js/core/splitEngine.js"></script>
+    <script src="js/core/compressEngine.js"></script>
+    <script src="js/core/imageConverter.js"></script>
+    <script src="js/core/imageEditorEngine.js"></script>
+    
+    <!-- UI Controllers -->
+    <script src="js/ui/pdfToImage.js"></script>
+    <script src="js/ui/imageToPdf.js"></script>
+    <script src="js/ui/cropTool.js"></script>
+    <script src="js/ui/resizeTool.js"></script>
+    <script src="js/ui/photoResizerTool.js"></script>
+    <script src="js/ui/mergeTool.js"></script>
+    <script src="js/ui/splitTool.js"></script>
+    <script src="js/ui/rotateTool.js"></script>
+    <script src="js/ui/extractTool.js"></script>
+    <script src="js/ui/compressTool.js"></script>
+    <script src="js/ui/lockTool.js"></script>
+    <script src="js/ui/removePagesTool.js"></script>
+    <script src="js/ui/pdfToJpgTool.js"></script>
+    <script src="js/ui/organizePdfTool.js"></script>
+    <script src="js/ui/imageConverterTool.js"></script>
+    <script src="js/ui/imageEditorTool.js"></script>
+    
+    <script src="js/state.js"></script>
+    <script src="js/router.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

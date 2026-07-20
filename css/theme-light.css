@@ -1,0 +1,51 @@
+/* Material You - Light Theme */
+
+[data-theme="light"] {
+    --md-primary: #1a73e8;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #d2e3fc;
+    --md-on-primary-container: #041e49;
+    
+    --md-secondary: #0061a4;
+    --md-on-secondary: #ffffff;
+    --md-secondary-container: #cfe5ff;
+    --md-on-secondary-container: #001c3b;
+    
+    --md-tertiary: #7a5600;
+    --md-on-tertiary: #ffffff;
+    --md-tertiary-container: #ffdea8;
+    --md-on-tertiary-container: #251800;
+    
+    --md-error: #ba1a1a;
+    --md-on-error: #ffffff;
+    --md-error-container: #ffdad6;
+    --md-on-error-container: #410002;
+    
+    --md-background: #fbfcfd;
+    --md-on-background: #191c1e;
+    
+    --md-surface: #f8f9fa;
+    --md-on-surface: #191c1e;
+    --md-surface-variant: #dee3eb;
+    --md-on-surface-variant: #41474e;
+    
+    --md-outline: #71787f;
+    --md-outline-variant: #c1c7d0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar-track {
+    background: var(--md-surface-variant);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--md-primary);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--md-secondary);
+}
+
+/* Selection */
+::selection {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+}

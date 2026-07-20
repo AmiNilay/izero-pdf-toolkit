@@ -1,0 +1,118 @@
+/* Material You - Dark Theme */
+
+[data-theme="dark"] {
+    --md-primary: #aac7ff;
+    --md-on-primary: #003061;
+    --md-primary-container: #00458f;
+    --md-on-primary-container: #d2e3fc;
+    
+    --md-secondary: #93cbff;
+    --md-on-secondary: #00315c;
+    --md-secondary-container: #004882;
+    --md-on-secondary-container: #cfe5ff;
+    
+    --md-tertiary: #f5be3a;
+    --md-on-tertiary: #402c00;
+    --md-tertiary-container: #5c3f00;
+    --md-on-tertiary-container: #ffdea8;
+    
+    --md-error: #ffb4ab;
+    --md-on-error: #690005;
+    --md-error-container: #93000a;
+    --md-on-error-container: #ffdad6;
+    
+    --md-background: #111314;
+    --md-on-background: #e1e3e5;
+    
+    --md-surface: #1e2022;
+    --md-on-surface: #e1e3e5;
+    --md-surface-variant: #41474e;
+    --md-on-surface-variant: #c1c7d0;
+    
+    --md-outline: #8b9199;
+    --md-outline-variant: #41474e;
+}
+
+[data-theme="dark"] .navbar {
+    background: #1a1c1e;
+    border-bottom: 1px solid #2a2c2e;
+}
+
+[data-theme="dark"] .tool-card {
+    background: #1e2022;
+    border-color: #2a2c2e;
+}
+
+[data-theme="dark"] .upload-area {
+    background: #1e2022;
+    border-color: #2a2c2e;
+}
+
+[data-theme="dark"] .settings-group {
+    background: #1e2022;
+    border-color: #2a2c2e;
+}
+
+[data-theme="dark"] .preview-area {
+    background: #1e2022;
+    border-color: #2a2c2e;
+}
+
+[data-theme="dark"] .preview-item {
+    background: #1e2022;
+    border-color: #2a2c2e;
+}
+
+[data-theme="dark"] .md-dialog-content {
+    background: #1e2022;
+}
+
+[data-theme="dark"] .toast {
+    background: #1e2022;
+}
+
+[data-theme="dark"] .settings-group input[type="text"],
+[data-theme="dark"] .settings-group input[type="number"],
+[data-theme="dark"] .settings-group input[type="password"],
+[data-theme="dark"] .settings-group select {
+    background: #111314;
+    border-color: #2a2c2e;
+    color: #e1e3e5;
+}
+
+[data-theme="dark"] .settings-group input:focus,
+[data-theme="dark"] .settings-group select:focus {
+    border-color: var(--md-primary);
+    box-shadow: 0 0 0 3px rgba(170, 199, 255, 0.3);
+}
+
+[data-theme="dark"] .btn-secondary {
+    background: #2a2c2e;
+    color: #e1e3e5;
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+    background: #3a3c3e;
+}
+
+/* Scrollbar */
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #2a2c2e;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: var(--md-primary);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: var(--md-secondary);
+}
+
+[data-theme="dark"] .offline-badge {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+}
+
+/* Selection */
+[data-theme="dark"] ::selection {
+    background: var(--md-primary);
+    color: var(--md-on-primary);
+}
