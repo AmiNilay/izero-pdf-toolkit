@@ -33,7 +33,6 @@ const PdfToJpgController = (function() {
                 <div class="settings-group">
                     <div class="settings-row">
                         <label class="setting-label">
-                            <span class="material-symbols-outlined">settings_display</span>
                             Resolution (DPI)
                         </label>
                         <select id="jpgDpi" class="setting-select">
@@ -45,7 +44,6 @@ const PdfToJpgController = (function() {
 
                     <div class="settings-row">
                         <label class="setting-label">
-                            <span class="material-symbols-outlined">photo_camera</span>
                             Quality
                         </label>
                         <div class="quality-slider">
