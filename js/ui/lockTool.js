@@ -1,17 +1,19 @@
 /**
- * Lock PDF - UI Controller
+ * Lock PDF - UI Controller with Live Preview
  */
 
 const LockToolController = (function() {
     'use strict';
 
     let currentFile = null;
+    let pdfDocument = null;
+    let totalPages = 0;
+    let processedPdfBytes = null;
 
     function render() {
         var container = document.getElementById('toolContent');
         if (!container) return;
 
-        // ✅ REMOVED: <section class="page active"> wrapper
         container.innerHTML = `
             <div class="tool-page">
                 <div class="tool-header">
@@ -30,21 +32,26 @@ const LockToolController = (function() {
                     <span id="lockFileDetails"></span>
                 </div>
 
-                <div class="settings-group" style="flex-direction: column; align-items: stretch;">
+                <div id="previewContainer" class="preview-container" style="display: none;">
+                    <h4>Document Preview</h4>
+                    <div id="pageGrid" class="lock-page-grid"></div>
+                </div>
+
+                <div class="settings-group" style="flex-direction: column; align-items: stretch; margin-top: 20px;">
                     <label>
                         <span class="material-symbols-outlined">lock</span>
                         Password:
-                        <input type="password" id="passwordInput" placeholder="Enter password">
+                        <input type="password" id="passwordInput" class="text-input" placeholder="Enter password (min 4 chars)">
                     </label>
                     <label>
                         <span class="material-symbols-outlined">lock</span>
                         Confirm Password:
-                        <input type="password" id="confirmPasswordInput" placeholder="Confirm password">
+                        <input type="password" id="confirmPasswordInput" class="text-input" placeholder="Confirm password">
                     </label>
-                    <div>
-                        <label>
+                    <div style="margin-top: 8px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                             <input type="checkbox" id="showPassword">
-                            <span class="material-symbols-outlined">visibility</span> Show password
+                            <span class="material-symbols-outlined" style="font-size: 18px;">visibility</span> Show password
                         </label>
                     </div>
                 </div>
@@ -53,14 +60,14 @@ const LockToolController = (function() {
                     <label>
                         <span class="material-symbols-outlined">security</span>
                         Encryption Level:
-                        <select id="encryptionLevel">
+                        <select id="encryptionLevel" class="setting-select">
                             <option value="128">128-bit (Faster)</option>
                             <option value="256" selected>256-bit (Stronger)</option>
                         </select>
                     </label>
                 </div>
 
-                <button class="btn btn-primary" id="lockPdfBtn" disabled>
+                <button class="btn btn-primary btn-lg" id="lockPdfBtn" disabled>
                     <span class="material-symbols-outlined">lock</span> Lock PDF
                 </button>
 
@@ -81,6 +88,9 @@ const LockToolController = (function() {
                         <button class="btn btn-success" id="downloadLockedBtn">
                             <span class="material-symbols-outlined">download</span> Download Locked PDF
                         </button>
+                        <button class="btn btn-secondary" id="lockAgainBtn">
+                            <span class="material-symbols-outlined">refresh</span> Lock Another PDF
+                        </button>
                     </div>
                 </div>
             </div>
@@ -94,6 +104,7 @@ const LockToolController = (function() {
         var uploadArea = document.getElementById('lockUploadArea');
         var lockBtn = document.getElementById('lockPdfBtn');
         var downloadBtn = document.getElementById('downloadLockedBtn');
+        var lockAgainBtn = document.getElementById('lockAgainBtn');
         var passwordInput = document.getElementById('passwordInput');
         var confirmInput = document.getElementById('confirmPasswordInput');
         var showPassword = document.getElementById('showPassword');
@@ -138,22 +149,96 @@ const LockToolController = (function() {
 
         if (lockBtn) lockBtn.addEventListener('click', lockPDF);
         if (downloadBtn) downloadBtn.addEventListener('click', downloadLocked);
+        if (lockAgainBtn) {
+            lockAgainBtn.addEventListener('click', function() {
+                document.getElementById('lockResult').style.display = 'none';
+                document.getElementById('previewContainer').style.display = 'none';
+                document.getElementById('pageGrid').innerHTML = '';
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('confirmPasswordInput').value = '';
+                processedPdfBytes = null;
+                pdfDocument = null;
+                currentFile = null;
+            });
+        }
     }
 
-    function handleFile(file) {
+    async function handleFile(file) {
         currentFile = file;
+        processedPdfBytes = null;
         
-        var infoDiv = document.getElementById('lockFileInfo');
-        var details = document.getElementById('lockFileDetails');
-        if (infoDiv && details) {
-            infoDiv.style.display = 'block';
-            details.textContent = '📄 ' + file.name + ' (' + FileHelpers.formatFileSize(file.size) + ')';
-        }
+        try {
+            var arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
+            pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            totalPages = pdfDocument.numPages;
+            
+            var infoDiv = document.getElementById('lockFileInfo');
+            var details = document.getElementById('lockFileDetails');
+            if (infoDiv && details) {
+                infoDiv.style.display = 'block';
+                details.textContent = '📄 ' + file.name + ' (' + totalPages + ' pages, ' + FileHelpers.formatFileSize(file.size) + ')';
+            }
 
-        document.getElementById('lockPdfBtn').disabled = false;
-        document.getElementById('lockResult').style.display = 'none';
-        
-        showToast('success', 'PDF loaded');
+            document.getElementById('lockPdfBtn').disabled = false;
+            document.getElementById('lockResult').style.display = 'none';
+            document.getElementById('previewContainer').style.display = 'block';
+            
+            await renderPreview();
+            showToast('success', 'PDF loaded');
+        } catch (error) {
+            console.error('Error reading PDF:', error);
+            showToast('error', 'Failed to read PDF: ' + error.message);
+        }
+    }
+
+    async function renderPreview() {
+        if (!pdfDocument) return;
+        var grid = document.getElementById('pageGrid');
+        if (!grid) return;
+
+        var html = '';
+        var maxPreview = Math.min(totalPages, 3);
+        for (var i = 1; i <= maxPreview; i++) {
+            html += `
+                <div class="lock-page-card">
+                    <div class="page-thumbnail-wrapper">
+                        <canvas id="lock-canvas-${i}" class="page-canvas"></canvas>
+                    </div>
+                    <div class="page-number-badge">Page ${i}</div>
+                </div>
+            `;
+        }
+        if (totalPages > 3) {
+            html += `<div class="lock-page-card more-pages">+${totalPages - 3} more pages</div>`;
+        }
+        grid.innerHTML = html;
+
+        for (var i = 1; i <= maxPreview; i++) {
+            await renderThumbnail(i);
+        }
+    }
+
+    async function renderThumbnail(pageNum) {
+        try {
+            var page = await pdfDocument.getPage(pageNum);
+            var canvas = document.getElementById('lock-canvas-' + pageNum);
+            if (!canvas) return;
+            
+            var ctx = canvas.getContext('2d');
+            var viewport = page.getViewport({ scale: 0.4 });
+            
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            
+            await page.render({
+                canvasContext: ctx,
+                viewport: viewport
+            }).promise;
+            
+            page.cleanup();
+        } catch (e) {
+            console.error('Error rendering thumbnail for page ' + pageNum, e);
+        }
     }
 
     async function lockPDF() {
@@ -190,6 +275,8 @@ const LockToolController = (function() {
             var pdf = await PDFDocument.load(arrayBuffer);
             
             var encryptionLevel = parseInt(document.getElementById('encryptionLevel').value);
+            
+            // This now works because we are using pdf-lib-with-encrypt
             await pdf.encrypt({
                 userPassword: password,
                 ownerPassword: password,
@@ -206,16 +293,8 @@ const LockToolController = (function() {
                 encryptionAlgorithm: encryptionLevel === 256 ? 'aes256' : 'aes128'
             });
 
-            var pdfBytes = await pdf.save();
-            var blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            var filename = FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_locked.pdf';
+            processedPdfBytes = await pdf.save();
             
-            window._lockedPdf = {
-                blob: blob,
-                filename: filename,
-                password: password
-            };
-
             document.getElementById('lockResult').style.display = 'block';
             document.getElementById('displayPassword').textContent = password;
 
@@ -231,12 +310,14 @@ const LockToolController = (function() {
     }
 
     function downloadLocked() {
-        if (!window._lockedPdf) {
+        if (!processedPdfBytes) {
             showToast('warning', 'Please lock a PDF first');
             return;
         }
 
-        DownloadHelpers.downloadBlob(window._lockedPdf.blob, window._lockedPdf.filename);
+        var blob = new Blob([processedPdfBytes], { type: 'application/pdf' });
+        var filename = FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_locked.pdf';
+        DownloadHelpers.downloadBlob(blob, filename);
         showToast('success', 'Locked PDF downloaded');
     }
 
