@@ -1,54 +1,49 @@
 /**
- * Remove Pages - UI Controller
+ * Remove Pages - UI Controller with Live Preview
  */
 
 const RemovePagesToolController = (function() {
     'use strict';
 
-    let currentFile = null;
-    let totalPages = 0;
+    var currentFile = null;
+    var totalPages = 0;
+    var pagesToRemove = new Set();
+    var pdfDocument = null;
+    var processedPdfBytes = null;
 
     function render() {
         var container = document.getElementById('toolContent');
         if (!container) return;
 
-        // ✅ REMOVED: <section class="page active"> wrapper
         container.innerHTML = `
             <div class="tool-page">
                 <div class="tool-header">
-                    <h2>🗑️ Remove Pages from PDF</h2>
-                    <p>Delete specific pages from your PDF document</p>
+                    <h2>🗑️ Remove Pages</h2>
+                    <p>Select pages to remove from your PDF</p>
                 </div>
 
                 <div class="upload-area" id="removeUploadArea">
                     <input type="file" id="removeFileInput" accept=".pdf,application/pdf">
                     <div class="upload-icon material-symbols-outlined">upload_file</div>
                     <div class="upload-text">Drop a PDF here or click to browse</div>
-                    <div class="upload-hint">Remove unwanted pages</div>
+                    <div class="upload-hint">Select pages to delete</div>
                 </div>
 
                 <div id="removeFileInfo" class="file-info" style="display: none;">
                     <span id="removeFileDetails"></span>
                 </div>
 
-                <div class="settings-group">
-                    <label>
-                        <span class="material-symbols-outlined">numbers</span>
-                        Pages to Remove:
-                        <input type="text" id="removePages" placeholder="e.g., 1,3,5-8">
-                    </label>
-                    <div class="hint-text">Enter page numbers or ranges separated by commas</div>
+                <div id="selectionControls" class="selection-controls" style="display: none;">
+                    <button class="btn btn-sm btn-secondary" id="selectAllBtn">Select All</button>
+                    <button class="btn btn-sm btn-secondary" id="deselectAllBtn">Deselect All</button>
+                    <button class="btn btn-sm btn-secondary" id="invertBtn">Invert Selection</button>
+                    <span class="selection-count" id="selectionCount">0 pages selected for removal</span>
                 </div>
 
-                <div class="settings-group">
-                    <label>
-                        <input type="checkbox" id="reverseSelection">
-                        <span class="material-symbols-outlined">flip</span> Reverse Selection (keep selected, remove rest)
-                    </label>
-                </div>
+                <div id="pageGrid" class="remove-page-grid"></div>
 
-                <button class="btn btn-danger" id="removePagesBtn" disabled>
-                    <span class="material-symbols-outlined">delete</span> Remove Pages
+                <button class="btn btn-primary btn-lg" id="removePagesBtn" disabled style="margin-top: 20px;">
+                    <span class="material-symbols-outlined">delete</span> Remove Selected Pages
                 </button>
 
                 <div class="progress-container">
@@ -61,17 +56,18 @@ const RemovePagesToolController = (function() {
                         <span class="material-symbols-outlined">check_circle</span>
                         <div>
                             <strong>Pages Removed Successfully!</strong>
-                            <p id="removedInfo"></p>
+                            <p id="removeInfoText"></p>
                         </div>
                     </div>
                     <div class="result-actions">
-                        <button class="btn btn-success" id="downloadRemovedBtn">
+                        <button class="btn btn-success" id="downloadRemoveBtn">
                             <span class="material-symbols-outlined">download</span> Download PDF
+                        </button>
+                        <button class="btn btn-secondary" id="removeAgainBtn">
+                            <span class="material-symbols-outlined">refresh</span> Start Over
                         </button>
                     </div>
                 </div>
-
-                <div id="pageList" class="page-list"></div>
             </div>
         `;
 
@@ -82,7 +78,11 @@ const RemovePagesToolController = (function() {
         var fileInput = document.getElementById('removeFileInput');
         var uploadArea = document.getElementById('removeUploadArea');
         var removeBtn = document.getElementById('removePagesBtn');
-        var downloadBtn = document.getElementById('downloadRemovedBtn');
+        var selectAllBtn = document.getElementById('selectAllBtn');
+        var deselectAllBtn = document.getElementById('deselectAllBtn');
+        var invertBtn = document.getElementById('invertBtn');
+        var downloadBtn = document.getElementById('downloadRemoveBtn');
+        var removeAgainBtn = document.getElementById('removeAgainBtn');
 
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -114,16 +114,34 @@ const RemovePagesToolController = (function() {
             });
         }
 
+        if (selectAllBtn) selectAllBtn.addEventListener('click', selectAll);
+        if (deselectAllBtn) deselectAllBtn.addEventListener('click', deselectAll);
+        if (invertBtn) invertBtn.addEventListener('click', invertSelection);
         if (removeBtn) removeBtn.addEventListener('click', removePages);
-        if (downloadBtn) downloadBtn.addEventListener('click', downloadRemoved);
+        if (downloadBtn) downloadBtn.addEventListener('click', downloadPdf);
+        if (removeAgainBtn) {
+            removeAgainBtn.addEventListener('click', function() {
+                document.getElementById('removeResult').style.display = 'none';
+                document.getElementById('pageGrid').innerHTML = '';
+                document.getElementById('selectionControls').style.display = 'none';
+                pagesToRemove.clear();
+                processedPdfBytes = null;
+                pdfDocument = null;
+                currentFile = null;
+            });
+        }
     }
 
     async function handleFile(file) {
         currentFile = file;
-        
+        pagesToRemove.clear();
+        processedPdfBytes = null;
+
         try {
-            totalPages = await PDFProcessor.getPDFPageCount(file);
-            
+            var arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
+            pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            totalPages = pdfDocument.numPages;
+
             var infoDiv = document.getElementById('removeFileInfo');
             var details = document.getElementById('removeFileDetails');
             if (infoDiv && details) {
@@ -131,12 +149,13 @@ const RemovePagesToolController = (function() {
                 details.textContent = '📄 ' + file.name + ' (' + totalPages + ' pages, ' + FileHelpers.formatFileSize(file.size) + ')';
             }
 
+            document.getElementById('selectionControls').style.display = 'flex';
             document.getElementById('removePagesBtn').disabled = false;
             document.getElementById('removeResult').style.display = 'none';
-            
-            renderPageList();
-            
-            showToast('success', 'Loaded PDF with ' + totalPages + ' pages');
+
+            await renderPageGrid();
+            updateSelectionCount();
+            showToast('success', 'Loaded PDF. Click pages to select them for removal.');
 
         } catch (error) {
             console.error('Error reading PDF:', error);
@@ -144,44 +163,132 @@ const RemovePagesToolController = (function() {
         }
     }
 
-    function renderPageList() {
-        var list = document.getElementById('pageList');
-        if (!list) return;
+    async function renderPageGrid() {
+        var grid = document.getElementById('pageGrid');
+        if (!grid) return;
 
-        var html = '<h4>Select pages to remove:</h4><div class="page-checkbox-grid">';
-        
+        var html = '';
         for (var i = 1; i <= totalPages; i++) {
             html += `
-                <div class="page-checkbox-item">
-                    <input type="checkbox" class="page-checkbox" data-page="${i}" id="page_${i}">
-                    <label for="page_${i}">Page ${i}</label>
+                <div class="remove-page-card" data-page="${i}" onclick="RemovePagesToolController.togglePage(${i})">
+                    <div class="page-thumbnail-wrapper">
+                        <canvas id="canvas-page-${i}" class="page-canvas"></canvas>
+                        <div class="selection-overlay" id="overlay-page-${i}">
+                            <span class="material-symbols-outlined">delete</span>
+                        </div>
+                    </div>
+                    <div class="page-number-badge">Page ${i}</div>
                 </div>
             `;
         }
+        grid.innerHTML = html;
+
+        // Render thumbnails
+        for (var i = 1; i <= totalPages; i++) {
+            await renderThumbnail(i);
+        }
+    }
+
+    async function renderThumbnail(pageNum) {
+        if (!pdfDocument) return;
+        try {
+            var page = await pdfDocument.getPage(pageNum);
+            var canvas = document.getElementById('canvas-page-' + pageNum);
+            if (!canvas) return;
+            
+            var ctx = canvas.getContext('2d');
+            var viewport = page.getViewport({ scale: 0.4 });
+            
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            
+            await page.render({
+                canvasContext: ctx,
+                viewport: viewport
+            }).promise;
+            
+            page.cleanup();
+        } catch (e) {
+            console.error('Error rendering thumbnail for page ' + pageNum, e);
+        }
+    }
+
+    function togglePage(pageNum) {
+        if (pagesToRemove.has(pageNum)) {
+            pagesToRemove.delete(pageNum);
+        } else {
+            pagesToRemove.add(pageNum);
+        }
+        updateCardUI(pageNum);
+        updateSelectionCount();
+    }
+
+    function updateCardUI(pageNum) {
+        var card = document.querySelector(`.remove-page-card[data-page="${pageNum}"]`);
+        var overlay = document.getElementById('overlay-page-' + pageNum);
+        if (!card || !overlay) return;
+
+        if (pagesToRemove.has(pageNum)) {
+            card.classList.add('selected');
+            overlay.style.display = 'flex';
+        } else {
+            card.classList.remove('selected');
+            overlay.style.display = 'none';
+        }
+    }
+
+    function selectAll() {
+        for (var i = 1; i <= totalPages; i++) {
+            pagesToRemove.add(i);
+            updateCardUI(i);
+        }
+        updateSelectionCount();
+    }
+
+    function deselectAll() {
+        pagesToRemove.clear();
+        for (var i = 1; i <= totalPages; i++) {
+            updateCardUI(i);
+        }
+        updateSelectionCount();
+    }
+
+    function invertSelection() {
+        for (var i = 1; i <= totalPages; i++) {
+            if (pagesToRemove.has(i)) {
+                pagesToRemove.delete(i);
+            } else {
+                pagesToRemove.add(i);
+            }
+            updateCardUI(i);
+        }
+        updateSelectionCount();
+    }
+
+    function updateSelectionCount() {
+        var count = pagesToRemove.size;
+        var countText = document.getElementById('selectionCount');
+        if (countText) {
+            countText.textContent = count + ' page' + (count !== 1 ? 's' : '') + ' selected for removal';
+        }
         
-        html += '</div>';
-        list.innerHTML = html;
-
-        var container = document.createElement('div');
-        container.style.marginTop = '8px';
-        container.innerHTML = `
-            <button class="btn btn-secondary btn-sm" id="selectAllPages">Select All</button>
-            <button class="btn btn-secondary btn-sm" id="deselectAllPages">Deselect All</button>
-        `;
-        list.appendChild(container);
-
-        document.getElementById('selectAllPages').addEventListener('click', function() {
-            document.querySelectorAll('.page-checkbox').forEach(function(cb) { cb.checked = true; });
-        });
-
-        document.getElementById('deselectAllPages').addEventListener('click', function() {
-            document.querySelectorAll('.page-checkbox').forEach(function(cb) { cb.checked = false; });
-        });
+        var removeBtn = document.getElementById('removePagesBtn');
+        if (removeBtn) {
+            removeBtn.disabled = (count === 0 || count === totalPages);
+            if (count === totalPages) {
+                removeBtn.title = 'Cannot remove all pages';
+            }
+        }
     }
 
     async function removePages() {
-        if (!currentFile) {
-            showToast('warning', 'Please upload a PDF first');
+        if (!currentFile || pagesToRemove.size === 0) {
+            showToast('warning', 'Please select at least one page to remove');
+            return;
+        }
+
+        if (pagesToRemove.size === totalPages) {
+            showToast('error', 'You cannot remove all pages from the PDF');
             return;
         }
 
@@ -190,93 +297,57 @@ const RemovePagesToolController = (function() {
         removeBtn.textContent = 'Processing...';
 
         try {
-            var checkboxes = document.querySelectorAll('.page-checkbox:checked');
-            var pagesToRemove = Array.from(checkboxes).map(function(cb) { return parseInt(cb.dataset.page); });
-            
-            var pagesInput = document.getElementById('removePages').value;
-            if (pagesInput.trim()) {
-                var result = Validators.validatePageRange(pagesInput, totalPages);
-                if (result.valid) {
-                    pagesToRemove = result.pages;
-                } else {
-                    throw new Error(result.error);
-                }
-            }
-
-            if (pagesToRemove.length === 0) {
-                showToast('warning', 'Please select pages to remove');
-                removeBtn.disabled = false;
-                removeBtn.textContent = 'Remove Pages';
-                return;
-            }
-
-            var reverse = document.getElementById('reverseSelection').checked;
-            if (reverse) {
-                var allPages = [];
-                for (var i = 1; i <= totalPages; i++) {
-                    allPages.push(i);
-                }
-                pagesToRemove = allPages.filter(function(p) { return !pagesToRemove.includes(p); });
-            }
-
             var { PDFDocument } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
             var pdf = await PDFDocument.load(arrayBuffer);
-            
-            var keepPages = [];
+            var newPdf = await PDFDocument.create();
+
+            var pagesToKeep = [];
             for (var i = 0; i < totalPages; i++) {
-                if (!pagesToRemove.includes(i + 1)) {
-                    keepPages.push(i);
+                if (!pagesToRemove.has(i + 1)) {
+                    pagesToKeep.push(i);
                 }
             }
 
-            if (keepPages.length === 0) {
-                throw new Error('Cannot remove all pages');
-            }
+            var copiedPages = await newPdf.copyPages(pdf, pagesToKeep);
+            copiedPages.forEach(function(page) {
+                newPdf.addPage(page);
+            });
 
-            var newPdf = await PDFDocument.create();
-            var pages = await newPdf.copyPages(pdf, keepPages);
-            for (var p = 0; p < pages.length; p++) {
-                newPdf.addPage(pages[p]);
-            }
-
-            var pdfBytes = await newPdf.save();
-            var blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            var filename = FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_modified.pdf';
+            processedPdfBytes = await newPdf.save();
             
-            window._removedPdf = {
-                blob: blob,
-                filename: filename,
-                removed: pagesToRemove.length,
-                remaining: keepPages.length
-            };
-
             document.getElementById('removeResult').style.display = 'block';
-            document.getElementById('removedInfo').textContent = 
-                'Removed ' + pagesToRemove.length + ' pages, ' + keepPages.length + ' pages remaining';
+            document.getElementById('removeInfoText').textContent = 
+                'Removed ' + pagesToRemove.size + ' page(s). ' + pagesToKeep.length + ' page(s) remaining.';
 
-            showToast('success', 'Removed ' + pagesToRemove.length + ' pages');
+            showToast('success', 'Pages removed successfully!');
 
         } catch (error) {
-            console.error('Remove pages error:', error);
-            showToast('error', 'Failed to remove pages: ' + error.message);
+            console.error('Error removing pages:', error);
+            showToast('error', 'Failed to process PDF: ' + error.message);
         } finally {
             removeBtn.disabled = false;
-            removeBtn.textContent = 'Remove Pages';
+            removeBtn.textContent = 'Remove Selected Pages';
         }
     }
 
-    function downloadRemoved() {
-        if (!window._removedPdf) {
-            showToast('warning', 'Please remove pages first');
+    function downloadPdf() {
+        if (!processedPdfBytes) {
+            showToast('warning', 'Please process the PDF first');
             return;
         }
-
-        DownloadHelpers.downloadBlob(window._removedPdf.blob, window._removedPdf.filename);
+        var blob = new Blob([processedPdfBytes], { type: 'application/pdf' });
+        var filename = FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_removed.pdf';
+        DownloadHelpers.downloadBlob(blob, filename);
         showToast('success', 'PDF downloaded');
     }
 
-    return { render: render };
+    // Expose togglePage to global scope for inline onclick handlers
+    return {
+        render: render,
+        togglePage: togglePage
+    };
+
 })();
 
 window.RemovePagesToolController = RemovePagesToolController;
