@@ -2603,3 +2603,207 @@ body {
         width: 100%;
     }
 }
+/* ============================================
+   ROTATE PDF TOOL - LIVE PREVIEW STYLES
+   ============================================ */
+
+.page-list {
+    margin-top: 30px;
+}
+
+.page-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.page-section-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface, #1f2937);
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+}
+
+.page-item {
+    background: var(--md-sys-color-surface-container, #f9fafb);
+    border: 2px solid var(--md-sys-color-outline-variant, #e5e7eb);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.page-item:hover {
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+}
+
+.page-preview-container {
+    width: 100%;
+    aspect-ratio: 1/1.414;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.page-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.page-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+}
+
+.page-number {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface, #1f2937);
+}
+
+.page-rotation {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--md-sys-color-primary, #2563eb);
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 12px;
+    border-radius: 6px;
+    min-width: 45px;
+    text-align: center;
+}
+
+.page-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+}
+
+.btn-icon {
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 8px;
+    background: var(--md-sys-color-secondary-container, #e0e7ff);
+    color: var(--md-sys-color-on-secondary-container, #3730a3);
+    font-size: 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.btn-icon:hover {
+    background: var(--md-sys-color-primary, #2563eb);
+    color: white;
+    transform: scale(1.1);
+}
+
+.btn-icon:active {
+    transform: scale(0.95);
+}
+
+.btn-icon.btn-reset {
+    background: var(--md-sys-color-error-container, #fee2e2);
+    color: var(--md-sys-color-on-error-container, #991b1b);
+}
+
+.btn-icon.btn-reset:hover {
+    background: var(--md-sys-color-error, #ef4444);
+    color: white;
+}
+
+.page-more {
+    text-align: center;
+    padding: 20px;
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    font-size: 14px;
+    grid-column: 1 / -1;
+    background: var(--md-sys-color-surface-container-low, #f3f4f6);
+    border-radius: 8px;
+}
+
+/* Loading state for canvas */
+.page-preview-container.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 3px solid var(--md-sys-color-outline, #d1d5db);
+    border-top-color: var(--md-sys-color-primary, #2563eb);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .page-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .page-item {
+        padding: 12px;
+    }
+    
+    .page-actions {
+        gap: 6px;
+    }
+    
+    .btn-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+    }
+    
+    .page-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rotate-tool .btn-lg {
+        width: 100%;
+    }
+    
+    .page-preview-container {
+        aspect-ratio: 1/1.414;
+    }
+}

@@ -1,5 +1,5 @@
 /**
- * Rotate PDF - UI Controller
+ * Rotate PDF - UI Controller with Live Preview
  */
 
 const RotateToolController = (function() {
@@ -9,6 +9,7 @@ const RotateToolController = (function() {
     let totalPages = 0;
     let pageRotations = {};
     let rotatedPdfBytes = null;
+    let pdfDocument = null;
 
     function render() {
         var container = document.getElementById('toolContent');
@@ -154,6 +155,7 @@ const RotateToolController = (function() {
                 document.getElementById('pageList').innerHTML = '';
                 rotatedPdfBytes = null;
                 pageRotations = {};
+                pdfDocument = null;
             });
         }
     }
@@ -162,7 +164,10 @@ const RotateToolController = (function() {
         currentFile = file;
         
         try {
-            totalPages = await PDFProcessor.getPDFPageCount(file);
+            // Load PDF for preview
+            var arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
+            pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            totalPages = pdfDocument.numPages;
             
             var infoDiv = document.getElementById('rotateInfo');
             var infoSpan = document.getElementById('rotateFileInfo');
@@ -179,7 +184,7 @@ const RotateToolController = (function() {
                 pageRotations[i] = 0;
             }
             
-            renderPageList();
+            await renderPageList();
             
             showToast('success', 'Loaded PDF with ' + totalPages + ' pages');
 
@@ -189,55 +194,134 @@ const RotateToolController = (function() {
         }
     }
 
-    function renderPageList() {
+    async function renderPageList() {
         var list = document.getElementById('pageList');
         if (!list) return;
 
-        var html = '<div class="page-section-header"><h4>Pages</h4><span class="hint-text">Click buttons to rotate individual pages</span></div><div class="page-grid">';
+        var html = '<div class="page-section-header"><h4>Pages Preview</h4><span class="hint-text">Click buttons to rotate - preview updates live</span></div><div class="page-grid">';
         
-        for (var i = 1; i <= Math.min(totalPages, 20); i++) {
+        // Show up to 10 pages in preview for performance
+        var maxPreviewPages = Math.min(totalPages, 10);
+        
+        for (var i = 1; i <= maxPreviewPages; i++) {
             var rotation = pageRotations[i] || 0;
-            var rotationLabel = rotation === 0 ? '0°' : rotation + '°';
             html += `
-                <div class="page-item">
+                <div class="page-item" id="page-item-${i}">
+                    <div class="page-preview-container">
+                        <canvas id="page-canvas-${i}" class="page-canvas"></canvas>
+                    </div>
                     <div class="page-info">
                         <div class="page-number">Page ${i}</div>
-                        <div class="page-rotation">${rotationLabel}</div>
+                        <div class="page-rotation" id="page-rotation-${i}">${rotation}°</div>
                     </div>
                     <div class="page-actions">
-                        <button class="btn-icon" data-page="${i}" data-angle="90" title="Rotate 90° CW">↻</button>
-                        <button class="btn-icon" data-page="${i}" data-angle="-90" title="Rotate 90° CCW">↺</button>
+                        <button class="btn-icon rotate-btn" data-page="${i}" data-angle="90" title="Rotate 90° CW">↻</button>
+                        <button class="btn-icon rotate-btn" data-page="${i}" data-angle="-90" title="Rotate 90° CCW">↺</button>
                         <button class="btn-icon btn-reset" data-page="${i}" title="Reset">✕</button>
                     </div>
                 </div>
             `;
         }
         
-        if (totalPages > 20) {
-            html += `<div class="page-more">... and ${totalPages - 20} more pages</div>`;
+        if (totalPages > 10) {
+            html += `<div class="page-more">... and ${totalPages - 10} more pages (scroll to process all)</div>`;
         }
         
         html += '</div>';
         list.innerHTML = html;
 
-        list.querySelectorAll('.rotate-page-btn, .btn-icon').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        // Render page previews
+        for (var i = 1; i <= maxPreviewPages; i++) {
+            await renderPagePreview(i);
+        }
+
+        // Attach rotation button events
+        list.querySelectorAll('.rotate-btn').forEach(function(btn) {
+            btn.addEventListener('click', async function() {
                 var page = parseInt(this.dataset.page);
                 var angle = parseInt(this.dataset.angle);
                 var current = pageRotations[page] || 0;
                 pageRotations[page] = (current + angle) % 360;
                 if (pageRotations[page] < 0) pageRotations[page] += 360;
-                renderPageList();
+                
+                // Update rotation display
+                document.getElementById('page-rotation-' + page).textContent = pageRotations[page] + '°';
+                
+                // Re-render the page with new rotation
+                await renderPagePreview(page);
             });
         });
 
-        list.querySelectorAll('.reset-page-btn, .btn-reset').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        // Attach reset button events
+        list.querySelectorAll('.btn-reset').forEach(function(btn) {
+            btn.addEventListener('click', async function() {
                 var page = parseInt(this.dataset.page);
                 pageRotations[page] = 0;
-                renderPageList();
+                
+                // Update rotation display
+                document.getElementById('page-rotation-' + page).textContent = '0°';
+                
+                // Re-render the page without rotation
+                await renderPagePreview(page);
             });
         });
+    }
+
+    async function renderPagePreview(pageNum) {
+        if (!pdfDocument) return;
+        
+        try {
+            var page = await pdfDocument.getPage(pageNum);
+            var canvas = document.getElementById('page-canvas-' + pageNum);
+            if (!canvas) return;
+            
+            var rotation = pageRotations[pageNum] || 0;
+            var ctx = canvas.getContext('2d');
+            
+            // Get viewport with original rotation
+            var viewport = page.getViewport({ scale: 0.5 });
+            
+            // Adjust canvas size based on rotation
+            if (rotation === 90 || rotation === 270) {
+                canvas.width = viewport.height;
+                canvas.height = viewport.width;
+            } else {
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+            }
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Save context and apply rotation
+            ctx.save();
+            
+            // Translate to center
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            
+            // Rotate
+            ctx.rotate(rotation * Math.PI / 180);
+            
+            // Translate back
+            ctx.translate(-canvas.width / 2, -canvas.height / 2);
+            
+            // Render page
+            var renderViewport = page.getViewport({ scale: 0.5 });
+            var renderContext = {
+                canvasContext: ctx,
+                viewport: renderViewport
+            };
+            
+            await page.render(renderContext).promise;
+            
+            ctx.restore();
+            
+            // Clean up
+            page.cleanup();
+            
+        } catch (error) {
+            console.error('Error rendering page preview:', error);
+        }
     }
 
     async function rotatePDF() {
@@ -292,7 +376,6 @@ const RotateToolController = (function() {
                 var rotation = pageRotations[i + 1] || 0;
                 
                 if (rotation > 0) {
-                    // Use PDFLib's degrees function to create proper rotation
                     page.setRotation(degrees(rotation));
                 }
                 
