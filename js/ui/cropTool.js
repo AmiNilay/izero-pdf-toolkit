@@ -1,7 +1,6 @@
 /**
  * Crop Tool - UI Controller
  */
-
 const CropToolController = (function() {
     'use strict';
 
@@ -15,7 +14,6 @@ const CropToolController = (function() {
         const container = document.getElementById('toolContent');
         if (!container) return;
 
-        // ✅ REMOVED: <section class="page active"> wrapper
         container.innerHTML = `
             <div class="tool-page">
                 <div class="tool-header">
@@ -25,61 +23,77 @@ const CropToolController = (function() {
 
                 <div class="upload-area" id="cropUploadArea">
                     <input type="file" id="cropFileInput" accept="image/*">
-                    <div class="upload-icon material-symbols-outlined">upload_file</div>
+                    <div class="upload-icon material-symbols-outlined">image</div>
                     <div class="upload-text">Drop an image here or click to browse</div>
-                    <div class="upload-hint">Click and drag on the image to select crop area</div>
+                    <div class="upload-hint">Supports JPG, PNG, WebP</div>
                 </div>
 
-                <div style="margin: 15px 0; position: relative;">
-                    <canvas id="cropCanvas" style="width:100%;max-width:800px;cursor:crosshair;border:1px solid #ddd;border-radius:8px;"></canvas>
+                <div id="cropFileInfo" class="file-info" style="display: none;">
+                    <span id="cropFileDetails"></span>
                 </div>
 
-                <div class="settings-group">
-                    <label>
-                        <span class="material-symbols-outlined">horizontal_rule</span>
-                        X: <input type="number" id="cropX" value="0" style="width:70px;">
-                    </label>
-                    <label>
-                        <span class="material-symbols-outlined">vertical_align_bottom</span>
-                        Y: <input type="number" id="cropY" value="0" style="width:70px;">
-                    </label>
-                    <label>
-                        <span class="material-symbols-outlined">width</span>
-                        Width: <input type="number" id="cropWidth" value="100" style="width:70px;">
-                    </label>
-                    <label>
-                        <span class="material-symbols-outlined">height</span>
-                        Height: <input type="number" id="cropHeight" value="100" style="width:70px;">
-                    </label>
-                    <label>
-                        <input type="checkbox" id="aspectLock">
-                        <span class="material-symbols-outlined">lock</span> Lock Aspect
-                    </label>
-                    <label>
-                        <input type="checkbox" id="showGrid">
-                        <span class="material-symbols-outlined">grid_on</span> Show Grid
-                    </label>
+                <div class="crop-workspace" style="display: none;">
+                    <div class="canvas-wrapper">
+                        <canvas id="cropCanvas" style="cursor: crosshair;"></canvas>
+                    </div>
                 </div>
 
-                <div class="result-actions" style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" id="applyCropBtn">
+                <div class="settings-group" id="cropSettings" style="display: none;">
+                    <div class="settings-row">
+                        <label class="setting-label">
+                            <span class="material-symbols-outlined">tune</span> Crop Coordinates
+                        </label>
+                        <div class="coordinate-grid">
+                            <div class="coord-input">
+                                <span>X</span>
+                                <input type="number" id="cropX" value="0" min="0">
+                            </div>
+                            <div class="coord-input">
+                                <span>Y</span>
+                                <input type="number" id="cropY" value="0" min="0">
+                            </div>
+                            <div class="coord-input">
+                                <span>Width</span>
+                                <input type="number" id="cropWidth" value="100" min="1">
+                            </div>
+                            <div class="coord-input">
+                                <span>Height</span>
+                                <input type="number" id="cropHeight" value="100" min="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-row">
+                        <label class="setting-checkbox">
+                            <input type="checkbox" id="aspectLock">
+                            <span class="material-symbols-outlined">lock</span> Lock Aspect Ratio
+                        </label>
+                        <label class="setting-checkbox">
+                            <input type="checkbox" id="showGrid" checked>
+                            <span class="material-symbols-outlined">grid_on</span> Show Grid
+                        </label>
+                    </div>
+                </div>
+
+                <div class="result-actions" id="cropActions" style="display: none; gap: 12px; flex-wrap: wrap; margin-top: 20px;">
+                    <button class="btn btn-primary btn-lg" id="applyCropBtn" style="flex: 1; min-width: 150px;">
                         <span class="material-symbols-outlined">crop</span> Apply Crop
                     </button>
-                    <button class="btn btn-secondary" id="resetCropBtn">
+                    <button class="btn btn-secondary btn-lg" id="resetCropBtn" style="flex: 1; min-width: 150px;">
                         <span class="material-symbols-outlined">refresh</span> Reset
                     </button>
-                    <button class="btn btn-success" id="downloadCropBtn" disabled>
+                    <button class="btn btn-success btn-lg" id="downloadCropBtn" disabled style="flex: 1; min-width: 150px;">
                         <span class="material-symbols-outlined">download</span> Download Cropped
                     </button>
                 </div>
 
-                <div id="cropInfo" class="crop-info">
-                    No selection made. Click and drag on the image to select crop area.
+                <div id="cropInfo" class="crop-info" style="display: none;">
+                    Click and drag on the image to select the crop area.
                 </div>
 
-                <div class="preview-area" id="cropPreview" style="display: none;">
-                    <h4>Cropped Result</h4>
-                    <div id="cropResult"></div>
+                <div class="preview-area" id="cropPreview" style="display: none; margin-top: 32px;">
+                    <h4 style="margin-bottom: 16px; font-weight: 600;">Cropped Result</h4>
+                    <div id="cropResult" style="text-align: center; background: var(--md-sys-color-surface-container, #f9fafb); padding: 20px; border-radius: 12px; border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);">
+                    </div>
                 </div>
             </div>
         `;
@@ -124,12 +138,10 @@ const CropToolController = (function() {
                 e.preventDefault();
                 this.classList.add('dragover');
             });
-
             uploadArea.addEventListener('dragleave', function(e) {
                 e.preventDefault();
                 this.classList.remove('dragover');
             });
-
             uploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('dragover');
@@ -162,38 +174,24 @@ const CropToolController = (function() {
                 const y = parseInt(yInput.value) || 0;
                 const w = parseInt(widthInput.value) || 100;
                 const h = parseInt(heightInput.value) || 100;
-                
-                if (currentImage && canvas) {
+                if (currentImage && canvas && typeof CropEngine.setCropFromCoordinates === 'function') {
                     CropEngine.setCropFromCoordinates(x, y, w, h);
                 }
             };
 
             xInput.addEventListener('change', updateCrop);
             yInput.addEventListener('change', updateCrop);
-            widthInput.addEventListener('change', function() {
-                if (aspectLock && aspectLock.checked) {
-                    // Maintain aspect ratio
-                    const ratio = parseInt(widthInput.value) / parseInt(heightInput.value);
-                    // This would need to be implemented
-                }
-                updateCrop();
-            });
-            heightInput.addEventListener('change', function() {
-                if (aspectLock && aspectLock.checked) {
-                    // Maintain aspect ratio
-                }
-                updateCrop();
-            });
+            widthInput.addEventListener('change', updateCrop);
+            heightInput.addEventListener('change', updateCrop);
         }
 
         // Show grid
         if (showGrid) {
             showGrid.addEventListener('change', function() {
                 if (this.checked) {
-                    drawGrid();
+                    if (typeof drawGrid === 'function') drawGrid();
                 } else {
-                    // Redraw without grid
-                    if (currentImage) {
+                    if (currentImage && canvas && typeof CropEngine.initCrop === 'function') {
                         CropEngine.initCrop(canvas, currentImage);
                     }
                 }
@@ -208,18 +206,28 @@ const CropToolController = (function() {
         try {
             currentImage = await FileHelpers.loadImage(file);
             const canvas = document.getElementById('cropCanvas');
-            
-            if (canvas) {
+            if (canvas && typeof CropEngine.initCrop === 'function') {
                 CropEngine.initCrop(canvas, currentImage);
+                
+                // Show workspace and settings
+                document.querySelector('.crop-workspace').style.display = 'block';
+                document.getElementById('cropSettings').style.display = 'block';
+                document.getElementById('cropActions').style.display = 'flex';
+                document.getElementById('cropInfo').style.display = 'flex';
+                
+                // Update file info
+                const infoDiv = document.getElementById('cropFileInfo');
+                const details = document.getElementById('cropFileDetails');
+                if (infoDiv && details) {
+                    infoDiv.style.display = 'block';
+                    details.textContent = '🖼️ ' + file.name + ' (' + FileHelpers.formatFileSize(file.size) + ')';
+                }
+                
                 showToast('success', 'Image loaded. Click and drag to select crop area.');
             }
-
-            // Enable download button (will be enabled after crop)
-            document.getElementById('downloadCropBtn').disabled = true;
             
-            // Hide previous result
+            document.getElementById('downloadCropBtn').disabled = true;
             document.getElementById('cropPreview').style.display = 'none';
-
         } catch (error) {
             console.error('Error loading image:', error);
             showToast('error', 'Failed to load image: ' + error.message);
@@ -231,8 +239,8 @@ const CropToolController = (function() {
      */
     function drawGrid() {
         const canvas = document.getElementById('cropCanvas');
-        if (!canvas || !currentImage) return;
-
+        if (!canvas || !currentImage || typeof CropEngine.getCropCoordinates !== 'function') return;
+        
         const ctx = canvas.getContext('2d');
         const rect = CropEngine.getCropCoordinates();
         
@@ -240,9 +248,13 @@ const CropToolController = (function() {
             const { x, y, width, height } = rect;
             const gridSize = 20;
             
+            // Redraw image first to clear previous grid
+            CropEngine.initCrop(canvas, currentImage);
+            
             // Draw grid lines
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
             
             for (let gx = x; gx < x + width; gx += gridSize) {
                 ctx.beginPath();
@@ -250,13 +262,13 @@ const CropToolController = (function() {
                 ctx.lineTo(gx, y + height);
                 ctx.stroke();
             }
-            
             for (let gy = y; gy < y + height; gy += gridSize) {
                 ctx.beginPath();
                 ctx.moveTo(x, gy);
                 ctx.lineTo(x + width, gy);
                 ctx.stroke();
             }
+            ctx.setLineDash([]);
         }
     }
 
@@ -265,13 +277,16 @@ const CropToolController = (function() {
      */
     function applyCrop() {
         try {
-            croppedCanvas = CropEngine.executeCrop();
+            if (typeof CropEngine.executeCrop !== 'function') {
+                showToast('error', 'Crop engine not ready');
+                return;
+            }
             
+            croppedCanvas = CropEngine.executeCrop();
             if (croppedCanvas) {
                 // Show result
                 const preview = document.getElementById('cropPreview');
                 const result = document.getElementById('cropResult');
-                
                 if (preview && result) {
                     preview.style.display = 'block';
                     result.innerHTML = '';
@@ -279,13 +294,17 @@ const CropToolController = (function() {
                     img.src = croppedCanvas.toDataURL('image/png');
                     img.style.maxWidth = '100%';
                     img.style.maxHeight = '400px';
+                    img.style.borderRadius = '8px';
+                    img.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
                     result.appendChild(img);
                 }
                 
                 // Enable download
                 document.getElementById('downloadCropBtn').disabled = false;
-                
                 showToast('success', 'Crop applied successfully');
+                
+                // Scroll to result
+                preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         } catch (error) {
             console.error('Crop error:', error);
@@ -299,11 +318,16 @@ const CropToolController = (function() {
     function resetCrop() {
         if (currentImage) {
             const canvas = document.getElementById('cropCanvas');
-            CropEngine.initCrop(canvas, currentImage);
-            
+            if (typeof CropEngine.initCrop === 'function') {
+                CropEngine.initCrop(canvas, currentImage);
+            }
             document.getElementById('cropPreview').style.display = 'none';
             document.getElementById('downloadCropBtn').disabled = true;
             croppedCanvas = null;
+            
+            // Reset coordinates to default
+            document.getElementById('cropX').value = 0;
+            document.getElementById('cropY').value = 0;
             
             showToast('info', 'Crop selection reset');
         }
@@ -317,18 +341,16 @@ const CropToolController = (function() {
             showToast('warning', 'Please apply crop first');
             return;
         }
-
+        
         const format = 'image/png';
         const quality = 0.92;
         const dataURL = croppedCanvas.toDataURL(format, quality);
-        
         const link = document.createElement('a');
         link.download = 'cropped_' + Date.now() + '.png';
         link.href = dataURL;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
         showToast('success', 'Cropped image downloaded');
     }
 
@@ -336,7 +358,6 @@ const CropToolController = (function() {
     return {
         render: render
     };
-
 })();
 
 window.CropToolController = CropToolController;

@@ -3184,3 +3184,256 @@ body {
     cursor: pointer;
     margin-top: 6px;
 }
+/* ============================================
+   LOCK PDF TOOL - PREVIEW STYLES
+   ============================================ */
+
+.preview-container {
+    margin-top: 24px;
+}
+
+.preview-container h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface, #1f2937);
+    margin-bottom: 12px;
+}
+
+.lock-page-grid {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.lock-page-card {
+    flex: 0 0 120px;
+    background: var(--md-sys-color-surface-container, #f9fafb);
+    border: 2px solid var(--md-sys-color-outline-variant, #e5e7eb);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+}
+
+.lock-page-card:hover {
+    border-color: var(--md-sys-color-primary, #2563eb);
+    transform: translateY(-2px);
+}
+
+.lock-page-card.more-pages {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    background: var(--md-sys-color-surface-container-low, #f3f4f6);
+    border-style: dashed;
+}
+
+.page-thumbnail-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1.414;
+    background: white;
+    overflow: hidden;
+}
+
+.lock-page-grid .page-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+.lock-page-grid .page-number-badge {
+    padding: 6px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface, #1f2937);
+    background: var(--md-sys-color-surface-container-high, #f3f4f6);
+    border-top: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+}
+
+.text-input, .setting-select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--md-sys-color-outline, #d1d5db);
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+    transition: all 0.2s;
+    margin-top: 6px;
+}
+
+.text-input:focus, .setting-select:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+/* ============================================
+   CROP IMAGE TOOL STYLES
+   ============================================ */
+.crop-workspace {
+    margin: 24px 0;
+    text-align: center;
+}
+
+.canvas-wrapper {
+    display: inline-block;
+    max-width: 100%;
+    background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 20px 20px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+}
+
+#cropCanvas {
+    max-width: 100%;
+    height: auto;
+    cursor: crosshair;
+    border-radius: 4px;
+    display: block;
+}
+
+.coordinate-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.coord-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.coord-input span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.coord-input input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid var(--md-sys-color-outline, #d1d5db);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background: white;
+    transition: all 0.2s;
+}
+
+.coord-input input:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.settings-row {
+    margin-bottom: 16px;
+}
+
+.settings-row:last-child {
+    margin-bottom: 0;
+}
+
+.setting-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--md-sys-color-on-surface, #1f2937);
+    margin-bottom: 12px;
+}
+
+.setting-label .material-symbols-outlined {
+    font-size: 20px;
+    color: var(--md-sys-color-primary, #2563eb);
+}
+
+.setting-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface, #1f2937);
+    cursor: pointer;
+    padding: 8px 12px;
+    background: var(--md-sys-color-surface-container-low, #f3f4f6);
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.setting-checkbox:hover {
+    background: var(--md-sys-color-surface-container, #f9fafb);
+}
+
+.setting-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--md-sys-color-primary, #2563eb);
+    cursor: pointer;
+}
+
+.crop-info {
+    padding: 12px 16px;
+    background: var(--md-sys-color-primary-container, #e0e7ff);
+    color: var(--md-sys-color-on-primary-container, #3730a3);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.crop-info::before {
+    content: 'info';
+    font-family: 'Material Symbols Outlined';
+    font-size: 18px;
+}
+
+/* Mobile Responsiveness for Crop Tool */
+@media (max-width: 768px) {
+    .coordinate-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .canvas-wrapper {
+        padding: 12px;
+    }
+    
+    .setting-checkbox {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .settings-row:last-child {
+        display: flex;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .result-actions {
+        flex-direction: column;
+    }
+    
+    .result-actions .btn {
+        width: 100%;
+    }
+    
+    .coordinate-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
