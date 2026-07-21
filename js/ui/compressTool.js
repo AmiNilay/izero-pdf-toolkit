@@ -11,18 +11,10 @@ const CompressToolController = (function() {
     let isCompressing = false;
 
     const SIZE_PRESETS = [
-        { label: '10 KB', value: 10 },
-        { label: '20 KB', value: 20 },
-        { label: '30 KB', value: 30 },
-        { label: '40 KB', value: 40 },
-        { label: '50 KB', value: 50 },
-        { label: '60 KB', value: 60 },
-        { label: '70 KB', value: 70 },
-        { label: '80 KB', value: 80 },
-        { label: '90 KB', value: 90 },
-        { label: '100 KB', value: 100 },
-        { label: '200 KB', value: 200 },
-        { label: '500 KB', value: 500 },
+        { label: '10 KB', value: 10 }, { label: '20 KB', value: 20 }, { label: '30 KB', value: 30 },
+        { label: '40 KB', value: 40 }, { label: '50 KB', value: 50 }, { label: '60 KB', value: 60 },
+        { label: '70 KB', value: 70 }, { label: '80 KB', value: 80 }, { label: '90 KB', value: 90 },
+        { label: '100 KB', value: 100 }, { label: '200 KB', value: 200 }, { label: '500 KB', value: 500 },
         { label: '1 MB', value: 1024 }
     ];
 
@@ -30,7 +22,6 @@ const CompressToolController = (function() {
         var container = document.getElementById('toolContent');
         if (!container) return;
 
-        // ✅ REMOVED: <section class="page active"> wrapper
         container.innerHTML = `
             <div class="tool-page">
                 <div class="tool-header">
@@ -325,14 +316,25 @@ const CompressToolController = (function() {
             var result;
 
             if (currentFileType === 'pdf') {
-                var strategy = level === 'lossless' ? 'lossless' : level === 'balanced' ? 'balanced' : 'maximum';
-                var compressionResult = await CompressEngine.compressPDF(currentFile, {
-                    strategy: strategy,
+                var compressionOptions = {
+                    strategy: level === 'lossless' ? 'lossless' : level === 'balanced' ? 'balanced' : 'maximum',
                     imageQuality: quality,
                     removeMetadata: !autoOptimize,
                     optimizeImages: autoOptimize
-                });
-                var blob = new Blob([compressionResult.pdfBytes], { type: 'application/pdf' });
+                };
+
+                // NEW: If target size mode is active, calculate target in KB and pass it
+                if (mode === 'size') {
+                    var targetSizeVal = parseInt(document.getElementById('targetSizeInput').value);
+                    var targetUnit = document.getElementById('targetSizeUnit').value;
+                    compressionOptions.targetSizeKB = targetUnit === 'MB' ? targetSizeVal * 1024 : targetSizeVal;
+                }
+
+                var compressionResult = await CompressEngine.compressPDF(currentFile, compressionOptions);
+                
+                // Handle both pdfBytes (legacy/strategy) and pdfBlob (target size)
+                var blob = compressionResult.pdfBlob || new Blob([compressionResult.pdfBytes], { type: 'application/pdf' });
+                
                 result = {
                     file: new File([blob], FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_compressed.pdf', { type: 'application/pdf' }),
                     blob: blob,
@@ -344,21 +346,43 @@ const CompressToolController = (function() {
             } else {
                 var maxWidth = resize ? parseInt(document.getElementById('maxWidth').value) : null;
                 var maxHeight = resize ? parseInt(document.getElementById('maxHeight').value) : null;
-                var compressionResult = await CompressEngine.compressImage(currentFile, {
-                    quality: quality,
-                    format: 'auto',
-                    maxWidth: maxWidth,
-                    maxHeight: maxHeight
-                });
-                result = {
-                    file: compressionResult.file,
-                    blob: compressionResult.blob,
-                    originalSize: compressionResult.originalSize,
-                    compressedSize: compressionResult.compressedSize,
-                    reduction: compressionResult.reduction,
-                    isPDF: false,
-                    canvas: compressionResult.canvas
-                };
+                
+                // If target size mode is active for images, use the dedicated image target function
+                if (mode === 'size') {
+                    var targetSizeVal = parseInt(document.getElementById('targetSizeInput').value);
+                    var targetUnit = document.getElementById('targetSizeUnit').value;
+                    var targetKB = targetUnit === 'MB' ? targetSizeVal * 1024 : targetSizeVal;
+                    
+                    var compressionResult = await CompressEngine.compressToTargetSize(currentFile, targetKB, {
+                        maxWidth: maxWidth,
+                        maxHeight: maxHeight
+                    });
+                    result = {
+                        file: compressionResult.file,
+                        blob: compressionResult.blob,
+                        originalSize: compressionResult.originalSize,
+                        compressedSize: compressionResult.compressedSize,
+                        reduction: compressionResult.reduction,
+                        isPDF: false,
+                        canvas: compressionResult.canvas
+                    };
+                } else {
+                    var compressionResult = await CompressEngine.compressImage(currentFile, {
+                        quality: quality,
+                        format: 'auto',
+                        maxWidth: maxWidth,
+                        maxHeight: maxHeight
+                    });
+                    result = {
+                        file: compressionResult.file,
+                        blob: compressionResult.blob,
+                        originalSize: compressionResult.originalSize,
+                        compressedSize: compressionResult.compressedSize,
+                        reduction: compressionResult.reduction,
+                        isPDF: false,
+                        canvas: compressionResult.canvas
+                    };
+                }
             }
 
             compressedResult = result;
@@ -366,6 +390,7 @@ const CompressToolController = (function() {
             document.getElementById('originalSizeDisplay').textContent = FileHelpers.formatFileSize(result.originalSize);
             document.getElementById('compressedSizeDisplay').textContent = FileHelpers.formatFileSize(result.compressedSize);
             document.getElementById('compressionReduction').textContent = 'Saved ' + result.reduction.toFixed(1) + '%';
+            
             var ratio = result.originalSize > 0 ? (result.compressedSize / result.originalSize) * 100 : 100;
             document.getElementById('sizeComparisonBar').style.width = Math.min(100, ratio) + '%';
             document.getElementById('sizeComparisonText').textContent = Math.round(100 - result.reduction) + '% of original';
@@ -377,7 +402,10 @@ const CompressToolController = (function() {
                 }
                 document.getElementById('compressPreview').style.display = 'block';
             }
-            showToast('success', 'Compressed! Saved ' + result.reduction.toFixed(1) + '%');
+            
+            var note = result.isPDF && compressionResult.note ? ' (' + compressionResult.note + ')' : '';
+            showToast('success', 'Compressed! Saved ' + result.reduction.toFixed(1) + '%' + note);
+            
         } catch (error) {
             console.error('Compression error:', error);
             showToast('error', 'Compression failed: ' + error.message);
