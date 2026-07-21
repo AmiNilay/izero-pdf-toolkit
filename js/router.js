@@ -9,7 +9,6 @@ const Router = (function() {
         'home': { title: 'Home', render: renderHome },
 
         // Core Tools
-        'pdf-to-image': { title: 'PDF → Images', render: renderPdfToImage },
         'image-to-pdf': { title: 'Images → PDF', render: renderImageToPdf },
         'crop': { title: 'Crop Image', render: renderCropTool },
         'resize': { title: 'Resize Image', render: renderResizeTool },
@@ -150,9 +149,6 @@ const Router = (function() {
                path.includes('support');
     }
 
-    // ============================================
-    // showPage - Simple show/hide, NO wrapper creation
-    // ============================================
     function showPage(pageId) {
         var homePage = document.getElementById('page-home');
         var toolContent = document.getElementById('toolContent');
@@ -195,15 +191,6 @@ const Router = (function() {
 
     function renderHome() {
         showPage('home');
-    }
-
-    function renderPdfToImage() {
-        showPage('tool');
-        if (typeof PdfToImageController !== 'undefined' && PdfToImageController.render) {
-            PdfToImageController.render();
-        } else {
-            showError('PDF to Images tool not loaded');
-        }
     }
 
     function renderImageToPdf() {
