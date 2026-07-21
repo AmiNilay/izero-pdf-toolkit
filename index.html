@@ -8,7 +8,7 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="google5b988d9348ce5c94.html" />
     
-    <!-- Base tag - adjust based on your deployment -->
+    <!-- Base tag -->
     <base href="/">
     
     <!-- SEO Meta Tags -->
@@ -69,11 +69,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
     <!-- Libraries -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js?v=99"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- CRITICAL FIX: Using pdf-lib-with-encrypt for the Lock PDF tool -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js?v=99"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
     <!-- ============================================
@@ -294,7 +295,8 @@
                 <div class="tool-card popular" data-tool="extract">
                     <div class="tool-card-inner">
                         <span class="tool-badge">★ Popular</span>
-                        <span class="tool-icon material-symbols-outlined">extract</span>
+                        <!-- FIX: Changed 'extract' to 'file_download' -->
+                        <span class="tool-icon material-symbols-outlined">file_download</span>
                         <h3>Extract Pages</h3>
                         <p>Extract selected pages from PDF</p>
                     </div>
@@ -358,7 +360,7 @@
                             <p>Rotate pages left or right</p>
                         </div>
                     </div>
-                    <div class="tool-card" data-tool="extract-images">
+                    <div class="tool-card" data-tool="extract">
                         <div class="tool-card-inner">
                             <span class="tool-icon material-symbols-outlined">image_search</span>
                             <h3>Extract Images</h3>
@@ -446,7 +448,8 @@
                     </div>
                     <div class="tool-card" data-tool="watermark">
                         <div class="tool-card-inner">
-                            <span class="tool-icon material-symbols-outlined">watermark</span>
+                            <!-- FIX: Changed 'watermark' to 'water_drop' -->
+                            <span class="tool-icon material-symbols-outlined">water_drop</span>
                             <h3>Watermark Image</h3>
                             <p>Add text or logo watermarks</p>
                         </div>
@@ -538,7 +541,7 @@
     <script src="js/ui/imageConverterTool.js"></script>
     <script src="js/ui/imageEditorTool.js"></script>
     
-    <!-- NEW TOOLS ADDED HERE -->
+    <!-- New Tools -->
     <script src="js/ui/rotateImageTool.js"></script>
     <script src="js/ui/watermarkTool.js"></script>
     
