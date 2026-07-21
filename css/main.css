@@ -2415,3 +2415,191 @@ body {
         width: 100%;
     }
 }
+/* ============================================
+   ROTATE PDF TOOL STYLES
+   ============================================ */
+
+.rotate-tool .settings-group {
+    background: var(--md-sys-color-surface-container, #f9fafb);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+}
+
+.rotate-tool .settings-row {
+    margin-bottom: 16px;
+}
+
+.rotate-tool .settings-row:last-child {
+    margin-bottom: 0;
+}
+
+.rotate-tool .setting-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--md-sys-color-on-surface, #1f2937);
+    margin-bottom: 8px;
+}
+
+.rotate-tool .setting-select,
+.rotate-tool .text-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid var(--md-sys-color-outline, #d1d5db);
+    border-radius: 8px;
+    font-size: 15px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.rotate-tool .setting-select:focus,
+.rotate-tool .text-input:focus {
+    outline: none;
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.rotate-tool .hint-text {
+    font-size: 13px;
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    margin-top: 6px;
+}
+
+/* Page List Styles */
+.page-list {
+    margin-top: 30px;
+}
+
+.page-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.page-section-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface, #1f2937);
+}
+
+.page-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.page-item {
+    background: var(--md-sys-color-surface-container, #f9fafb);
+    border: 2px solid var(--md-sys-color-outline-variant, #e5e7eb);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.2s;
+}
+
+.page-item:hover {
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+}
+
+.page-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-number {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface, #1f2937);
+}
+
+.page-rotation {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--md-sys-color-primary, #2563eb);
+    background: rgba(37, 99, 235, 0.1);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.page-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.btn-icon {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: var(--md-sys-color-secondary-container, #e0e7ff);
+    color: var(--md-sys-color-on-secondary-container, #3730a3);
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background: var(--md-sys-color-primary, #2563eb);
+    color: white;
+    transform: scale(1.05);
+}
+
+.btn-icon.btn-reset {
+    background: var(--md-sys-color-error-container, #fee2e2);
+    color: var(--md-sys-color-on-error-container, #991b1b);
+}
+
+.btn-icon.btn-reset:hover {
+    background: var(--md-sys-color-error, #ef4444);
+    color: white;
+}
+
+.page-more {
+    text-align: center;
+    padding: 16px;
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    font-size: 14px;
+    grid-column: 1 / -1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .page-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .page-actions {
+        gap: 4px;
+    }
+    
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .rotate-tool .btn-lg {
+        width: 100%;
+    }
+}

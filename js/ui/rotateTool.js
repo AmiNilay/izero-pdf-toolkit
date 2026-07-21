@@ -8,12 +8,12 @@ const RotateToolController = (function() {
     let currentFile = null;
     let totalPages = 0;
     let pageRotations = {};
+    let rotatedPdfBytes = null;
 
     function render() {
         var container = document.getElementById('toolContent');
         if (!container) return;
 
-        // ✅ REMOVED: <section class="page active"> wrapper
         container.innerHTML = `
             <div class="tool-page">
                 <div class="tool-header">
@@ -33,34 +33,41 @@ const RotateToolController = (function() {
                 </div>
 
                 <div class="settings-group">
-                    <label>
-                        <span class="material-symbols-outlined">rotate_right</span>
-                        Rotation Angle:
-                        <select id="rotationAngle">
+                    <div class="settings-row">
+                        <label class="setting-label">
+                            <span class="material-symbols-outlined">rotate_right</span>
+                            Rotation Angle
+                        </label>
+                        <select id="rotationAngle" class="setting-select">
                             <option value="90">90° Clockwise</option>
                             <option value="180">180°</option>
                             <option value="270">270° Clockwise (90° Counter)</option>
                         </select>
-                    </label>
-                    <label>
-                        <span class="material-symbols-outlined">select_all</span>
-                        Apply to:
-                        <select id="rotationScope">
+                    </div>
+                    <div class="settings-row">
+                        <label class="setting-label">
+                            <span class="material-symbols-outlined">select_all</span>
+                            Apply to
+                        </label>
+                        <select id="rotationScope" class="setting-select">
                             <option value="all">All Pages</option>
                             <option value="specific">Specific Pages</option>
                         </select>
-                    </label>
+                    </div>
                 </div>
 
-                <div id="specificPagesDiv" style="display: none; margin: 10px 0;">
-                    <label>
-                        <span class="material-symbols-outlined">numbers</span>
-                        Page numbers to rotate (e.g., "1,3,5-8"):
-                        <input type="text" id="rotatePages" placeholder="1,3,5-8">
-                    </label>
+                <div id="specificPagesDiv" class="settings-group" style="display: none;">
+                    <div class="settings-row">
+                        <label class="setting-label">
+                            <span class="material-symbols-outlined">numbers</span>
+                            Page Numbers
+                        </label>
+                        <input type="text" id="rotatePages" class="text-input" placeholder="1,3,5-8">
+                        <div class="hint-text">Enter page numbers separated by commas or ranges (e.g., "1,3,5-8")</div>
+                    </div>
                 </div>
 
-                <button class="btn btn-primary" id="rotatePdfBtn" disabled>
+                <button class="btn btn-primary btn-lg" id="rotatePdfBtn" disabled>
                     <span class="material-symbols-outlined">rotate_right</span> Rotate PDF
                 </button>
 
@@ -81,6 +88,9 @@ const RotateToolController = (function() {
                         <button class="btn btn-success" id="downloadRotateBtn">
                             <span class="material-symbols-outlined">download</span> Download Rotated PDF
                         </button>
+                        <button class="btn btn-secondary" id="rotateAgainBtn">
+                            <span class="material-symbols-outlined">refresh</span> Rotate Another PDF
+                        </button>
                     </div>
                 </div>
 
@@ -97,6 +107,7 @@ const RotateToolController = (function() {
         var rotateBtn = document.getElementById('rotatePdfBtn');
         var scopeSelect = document.getElementById('rotationScope');
         var downloadBtn = document.getElementById('downloadRotateBtn');
+        var rotateAgainBtn = document.getElementById('rotateAgainBtn');
 
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -137,6 +148,14 @@ const RotateToolController = (function() {
 
         if (rotateBtn) rotateBtn.addEventListener('click', rotatePDF);
         if (downloadBtn) downloadBtn.addEventListener('click', downloadRotated);
+        if (rotateAgainBtn) {
+            rotateAgainBtn.addEventListener('click', function() {
+                document.getElementById('rotateResult').style.display = 'none';
+                document.getElementById('pageList').innerHTML = '';
+                rotatedPdfBytes = null;
+                pageRotations = {};
+            });
+        }
     }
 
     async function handleFile(file) {
@@ -174,28 +193,34 @@ const RotateToolController = (function() {
         var list = document.getElementById('pageList');
         if (!list) return;
 
-        var html = '<h4>Pages</h4><div class="page-grid">';
+        var html = '<div class="page-section-header"><h4>Pages</h4><span class="hint-text">Click buttons to rotate individual pages</span></div><div class="page-grid">';
         
-        for (var i = 1; i <= totalPages; i++) {
+        for (var i = 1; i <= Math.min(totalPages, 20); i++) {
             var rotation = pageRotations[i] || 0;
             var rotationLabel = rotation === 0 ? '0°' : rotation + '°';
             html += `
                 <div class="page-item">
-                    <div class="page-number">Page ${i}</div>
-                    <div class="page-rotation">${rotationLabel}</div>
+                    <div class="page-info">
+                        <div class="page-number">Page ${i}</div>
+                        <div class="page-rotation">${rotationLabel}</div>
+                    </div>
                     <div class="page-actions">
-                        <button class="rotate-page-btn" data-page="${i}" data-angle="90">↻</button>
-                        <button class="rotate-page-btn" data-page="${i}" data-angle="-90">↺</button>
-                        <button class="reset-page-btn" data-page="${i}">✕</button>
+                        <button class="btn-icon" data-page="${i}" data-angle="90" title="Rotate 90° CW">↻</button>
+                        <button class="btn-icon" data-page="${i}" data-angle="-90" title="Rotate 90° CCW">↺</button>
+                        <button class="btn-icon btn-reset" data-page="${i}" title="Reset">✕</button>
                     </div>
                 </div>
             `;
         }
         
+        if (totalPages > 20) {
+            html += `<div class="page-more">... and ${totalPages - 20} more pages</div>`;
+        }
+        
         html += '</div>';
         list.innerHTML = html;
 
-        list.querySelectorAll('.rotate-page-btn').forEach(function(btn) {
+        list.querySelectorAll('.rotate-page-btn, .btn-icon').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var page = parseInt(this.dataset.page);
                 var angle = parseInt(this.dataset.angle);
@@ -206,7 +231,7 @@ const RotateToolController = (function() {
             });
         });
 
-        list.querySelectorAll('.reset-page-btn').forEach(function(btn) {
+        list.querySelectorAll('.reset-page-btn, .btn-reset').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var page = parseInt(this.dataset.page);
                 pageRotations[page] = 0;
@@ -232,9 +257,8 @@ const RotateToolController = (function() {
             var pagesToRotate = [];
             
             if (scope === 'all') {
-                var keys = Object.keys(pageRotations);
-                for (var k = 0; k < keys.length; k++) {
-                    pagesToRotate.push(parseInt(keys[k]));
+                for (var i = 1; i <= totalPages; i++) {
+                    pagesToRotate.push(i);
                 }
             } else {
                 var pagesStr = document.getElementById('rotatePages').value;
@@ -248,13 +272,15 @@ const RotateToolController = (function() {
                 pagesToRotate = result.pages;
             }
 
+            // Update page rotations
             for (var p = 0; p < pagesToRotate.length; p++) {
-                var page = pagesToRotate[p];
-                var current = pageRotations[page] || 0;
-                pageRotations[page] = (current + angle) % 360;
+                var pageNum = pagesToRotate[p];
+                var current = pageRotations[pageNum] || 0;
+                pageRotations[pageNum] = (current + angle) % 360;
             }
 
-            var { PDFDocument } = window.PDFLib;
+            // Load PDF
+            var { PDFDocument, degrees } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
             var pdf = await PDFDocument.load(arrayBuffer);
             var newPdf = await PDFDocument.create();
@@ -264,9 +290,12 @@ const RotateToolController = (function() {
             for (var i = 0; i < total; i++) {
                 var [page] = await newPdf.copyPages(pdf, [i]);
                 var rotation = pageRotations[i + 1] || 0;
+                
                 if (rotation > 0) {
-                    page.setRotation(rotation);
+                    // Use PDFLib's degrees function to create proper rotation
+                    page.setRotation(degrees(rotation));
                 }
+                
                 newPdf.addPage(page);
                 
                 var progress = (i + 1) / total * 100;
@@ -276,7 +305,7 @@ const RotateToolController = (function() {
             window.showProgress(false);
             
             var pdfBytes = await newPdf.save();
-            window._rotatedPdfBytes = pdfBytes;
+            rotatedPdfBytes = pdfBytes;
 
             document.getElementById('rotateResult').style.display = 'block';
             document.getElementById('rotateInfoText').textContent = 'Size: ' + FileHelpers.formatFileSize(pdfBytes.byteLength);
@@ -293,12 +322,12 @@ const RotateToolController = (function() {
     }
 
     function downloadRotated() {
-        if (!window._rotatedPdfBytes) {
+        if (!rotatedPdfBytes) {
             showToast('warning', 'Please rotate the PDF first');
             return;
         }
 
-        var blob = new Blob([window._rotatedPdfBytes], { type: 'application/pdf' });
+        var blob = new Blob([rotatedPdfBytes], { type: 'application/pdf' });
         DownloadHelpers.downloadBlob(blob, 'rotated.pdf');
         showToast('success', 'Rotated PDF downloaded');
     }
