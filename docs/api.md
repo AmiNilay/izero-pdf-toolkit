@@ -6,13 +6,15 @@ This document describes the internal API of the Offline PDF Toolkit. All APIs ar
 ## Core Modules
 
 ### PDFProcessor
-PDF manipulation using PDF.js.
+PDF manipulation using PDF.js and pdf-lib.
 
 **Methods:**
 - `pdfToImages(file, options)` - Convert PDF to images
 - `getPDFInfo(file)` - Get PDF metadata
 - `extractImagesFromPDF(file, options)` - Extract embedded images
 - `getPDFPageCount(file)` - Get total pages
+- `encryptPDF(pdf, options)` - Encrypt PDF with password protection
+- `decryptPDF(pdf, password)` - Decrypt PDF with password
 
 ### ImageProcessor
 Image processing operations.
@@ -23,6 +25,9 @@ Image processing operations.
 - `convertImageFormat(file, targetFormat, quality)` - Change image format
 - `applyFilters(image, filters)` - Apply filters to image
 - `compareImages(image1, image2)` - Compare two images
+- `compressImage(file, targetSize)` - Compress image to target size
+- `addWatermark(image, text, options)` - Add text watermark
+- `rotateImage(image, degrees)` - Rotate image
 
 ### CropEngine
 Image cropping engine.
@@ -32,6 +37,7 @@ Image cropping engine.
 - `executeCrop()` - Execute crop operation
 - `resetCrop()` - Reset crop selection
 - `getCropCoordinates()` - Get crop coordinates
+- `setCropFromCoordinates(x, y, width, height)` - Set crop area
 
 ### MergeEngine
 PDF merging functionality.
@@ -55,13 +61,15 @@ PDF splitting functionality.
 - `reversePages(pdfFile)` - Reverse page order
 
 ### CompressEngine
-PDF compression.
+PDF and image compression.
 
 **Methods:**
 - `compressPDF(pdfFile, options)` - Compress PDF
 - `estimateCompression(pdfFile)` - Estimate compression ratio
 - `optimizeForWeb(pdfFile)` - Optimize for web
 - `compressWithPDFLib(pdfFile, quality)` - Compress using pdf-lib
+- `compressImage(file, targetSize)` - Compress image to target size
+- `calculateTargetQuality(file, targetSize)` - Calculate quality for target size
 
 ## Utility Modules
 
@@ -74,6 +82,8 @@ File operations.
 - `loadImage(file)` - Load image from file
 - `downloadFile(url, filename)` - Trigger download
 - `formatFileSize(bytes)` - Format file size
+- `getFileNameWithoutExtension(filename)` - Get filename without extension
+- `isFileValid(file, validTypes, maxSize)` - Check if file is valid
 
 ### CanvasHelpers
 Canvas manipulation.
@@ -84,6 +94,7 @@ Canvas manipulation.
 - `cropImage(image, x, y, width, height)` - Crop image
 - `rotateImage(image, degrees)` - Rotate image
 - `applyFilter(image, filter, value)` - Apply filter
+- `drawGrid(canvas, gridSize)` - Draw grid on canvas
 
 ### ZipHelpers
 ZIP file operations.
@@ -94,6 +105,7 @@ ZIP file operations.
 - `extractZip(blob)` - Extract ZIP contents
 - `addToZip(zipBlob, filename, data)` - Add to ZIP
 - `removeFromZip(zipBlob, filename)` - Remove from ZIP
+- `getZipEntries(zipBlob)` - Get all entries in ZIP
 
 ### Validators
 Input validation.
@@ -104,12 +116,14 @@ Input validation.
 - `checkFileSize(file, maxMB)` - Check file size
 - `validatePageRange(range, totalPages)` - Validate page range
 - `isNumber(value, min, max)` - Check if number
+- `isPasswordValid(password)` - Check if password is valid
+- `isPageRangeValid(range, totalPages)` - Check if page range is valid
 
 ## UI Controllers
 
 Each tool has a corresponding UI controller:
 
-- `PdfToImageController.render()` - PDF to Images tool
+- `PdfToJpgController.render()` - PDF to JPG tool
 - `ImageToPdfController.render()` - Images to PDF tool
 - `CropToolController.render()` - Crop tool
 - `ResizeToolController.render()` - Resize tool
@@ -117,6 +131,15 @@ Each tool has a corresponding UI controller:
 - `SplitToolController.render()` - Split PDF tool
 - `RotateToolController.render()` - Rotate PDF tool
 - `ExtractToolController.render()` - Extract Images tool
+- `CompressToolController.render()` - Compress PDF tool
+- `OrganizePdfToolController.render()` - Organize PDF tool
+- `RemovePagesToolController.render()` - Remove Pages tool
+- `LockToolController.render()` - Lock PDF tool
+- `CompressImageToolController.render()` - Compress Image tool
+- `ImageConverterToolController.render()` - Convert Image tool
+- `RotateImageToolController.render()` - Rotate Image tool
+- `WatermarkToolController.render()` - Watermark Image tool
+- `PhotoResizerToolController.render()` - Photo Resizer tool
 
 ## Global Functions
 
@@ -125,3 +148,28 @@ Each tool has a corresponding UI controller:
 - `Router.navigate(tool)` - Navigate to tool
 - `AppState.getState(key)` - Get application state
 - `AppState.setState(updates)` - Update application state
+- `FileHelpers.formatFileSize(bytes)` - Format file size in human-readable format
+- `Validators.validatePageRange(range, totalPages)` - Validate page range format
+- `showToast(type, message, duration)` - Display toast notification to user
+
+## New Features in v2.0.0
+
+### Enhanced PDF Processing
+- **PDF Encryption**: Full AES-128/256 encryption support with password protection
+- **Smart Compression**: Binary search algorithm to hit exact target file sizes
+- **Page Management**: Visual page reordering and manipulation
+
+### Image Processing
+- **Image Watermarking**: Tiled text watermarking across the entire image
+- **Image Rotation**: Full rotation and flip capabilities with visual preview
+- **Photo Resizing**: Preset dimensions for common use cases (ID, social media)
+
+### UI Improvements
+- **Live Previews**: Real-time canvas previews for all image and PDF tools
+- **Visual Selection**: Visual page selection and highlighting for PDF tools
+- **Responsive Grids**: Improved tool grid layouts for all screen sizes
+
+### Performance
+- **Faster Processing**: Optimized canvas operations and memory management
+- **Better Caching**: Improved service worker caching strategy
+- **Progress Indicators**: More detailed progress feedback for long operations

@@ -105,8 +105,6 @@ const LockToolController = (function() {
         var lockBtn = document.getElementById('lockPdfBtn');
         var downloadBtn = document.getElementById('downloadLockedBtn');
         var lockAgainBtn = document.getElementById('lockAgainBtn');
-        var passwordInput = document.getElementById('passwordInput');
-        var confirmInput = document.getElementById('confirmPasswordInput');
         var showPassword = document.getElementById('showPassword');
 
         if (showPassword) {
@@ -270,13 +268,13 @@ const LockToolController = (function() {
         lockBtn.textContent = 'Encrypting...';
 
         try {
+            // This now uses the forked pdf-lib-with-encrypt library
             var { PDFDocument } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
             var pdf = await PDFDocument.load(arrayBuffer);
             
             var encryptionLevel = parseInt(document.getElementById('encryptionLevel').value);
             
-            // This now works because we are using pdf-lib-with-encrypt
             await pdf.encrypt({
                 userPassword: password,
                 ownerPassword: password,
