@@ -66,11 +66,8 @@ const PdfToJpgController = (function() {
                         </div>
                     </div>
                     <div class="result-actions" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px;">
-                        <button class="btn btn-success" id="downloadJpgAll" style="flex: 1; min-width: 140px;">
-                            <span class="material-symbols-outlined">download</span> Download Selected
-                        </button>
-                        <button class="btn btn-secondary" id="downloadJpgZip" style="flex: 1; min-width: 140px;">
-                            <span class="material-symbols-outlined">folder_zip</span> Download ZIP
+                        <button class="btn btn-success" id="downloadJpgZip" style="flex: 1; min-width: 200px;">
+                            <span class="material-symbols-outlined">folder_zip</span> Download Selected (ZIP)
                         </button>
                     </div>
                 </div>
@@ -129,7 +126,6 @@ const PdfToJpgController = (function() {
             convertBtn.addEventListener('click', convertToJpg);
         }
 
-        document.getElementById('downloadJpgAll').addEventListener('click', downloadAll);
         document.getElementById('downloadJpgZip').addEventListener('click', downloadZip);
     }
 
@@ -204,35 +200,37 @@ const PdfToJpgController = (function() {
             return;
         }
 
+        // Mobile responsive header
         var html = `
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500;">
-                    <input type="checkbox" id="selectAllJpg" checked style="width: 18px; height: 18px; cursor: pointer;"> 
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 15px;">
+                    <input type="checkbox" id="selectAllJpg" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--md-sys-color-primary, #2563eb);"> 
                     Select All (${images.length} pages)
                 </label>
                 <span id="selectedCountText" style="font-size: 14px; color: var(--md-sys-color-on-surface-variant, #6b7280);">${images.length} of ${images.length} selected</span>
             </div>
-            <div class="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
+            <div class="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;">
         `;
         
         for (var i = 0; i < images.length; i++) {
             var img = images[i];
             // Use lower quality for grid thumbnails to save memory and improve load speed
             var thumbUrl = img.canvas.toDataURL('image/jpeg', 0.5); 
+            
             html += `
-                <div class="preview-item" style="position: relative; background: var(--md-sys-color-surface-container, #f9fafb); border-radius: 12px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb); display: flex; flex-direction: column;">
+                <div class="preview-item" style="position: relative; background: var(--md-sys-color-surface-container, #f9fafb); border-radius: 12px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb); display: flex; flex-direction: column; box-sizing: border-box;">
                     <div style="position: absolute; top: 16px; left: 16px; z-index: 2;">
-                        <input type="checkbox" class="img-select-checkbox" data-index="${i}" checked style="width: 18px; height: 18px; cursor: pointer;">
+                        <input type="checkbox" class="img-select-checkbox" data-index="${i}" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--md-sys-color-primary, #2563eb);">
                     </div>
                     <div style="width: 100%; aspect-ratio: 1/1.414; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; margin-top: 8px;">
                         <img src="${thumbUrl}" alt="Page ${img.page}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
                     </div>
                     <div style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface, #1f2937); text-align: center; margin-bottom: 12px;">Page ${img.page}</div>
-                    <div style="display: flex; gap: 8px; margin-top: auto;">
-                        <button class="btn btn-secondary view-img-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0;">
+                    <div style="display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap;">
+                        <button class="btn btn-secondary view-img-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0; min-width: 60px;">
                             <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">visibility</span> View
                         </button>
-                        <button class="btn btn-primary download-single-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0;">
+                        <button class="btn btn-primary save-img-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0; min-width: 60px;">
                             <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">download</span> Save
                         </button>
                     </div>
@@ -250,19 +248,21 @@ const PdfToJpgController = (function() {
             cb.addEventListener('change', updateSelectedCount);
         });
 
-        // Attach view events
+        // Attach individual view events
         document.querySelectorAll('.view-img-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
                 var idx = parseInt(this.getAttribute('data-index'));
-                showImageModal(images[idx]);
+                showImageModal(idx);
             });
         });
 
-        // Attach single download events
-        document.querySelectorAll('.download-single-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        // Attach individual save events
+        document.querySelectorAll('.save-img-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
                 var idx = parseInt(this.getAttribute('data-index'));
-                downloadSingleImage(images[idx]);
+                saveSingleImage(idx);
             });
         });
     }
@@ -291,20 +291,15 @@ const PdfToJpgController = (function() {
         document.getElementById('selectedCountText').textContent = selected + ' of ' + total + ' selected';
         document.getElementById('selectAllJpg').checked = (selected === total);
         
-        // Disable bulk buttons if nothing is selected
-        var downloadAllBtn = document.getElementById('downloadJpgAll');
+        // Disable ZIP button if nothing is selected
         var downloadZipBtn = document.getElementById('downloadJpgZip');
-        if (selected === 0) {
-            downloadAllBtn.disabled = true;
-            downloadZipBtn.disabled = true;
-        } else {
-            downloadAllBtn.disabled = false;
-            downloadZipBtn.disabled = false;
-        }
+        downloadZipBtn.disabled = (selected === 0);
     }
 
-    function showImageModal(imgObj) {
+    function showImageModal(index) {
+        var imgObj = resultImages[index];
         var modal = document.getElementById('img-preview-modal');
+        
         if (!modal) {
             modal = document.createElement('div');
             modal.id = 'img-preview-modal';
@@ -312,7 +307,7 @@ const PdfToJpgController = (function() {
             
             modal.innerHTML = `
                 <div style="width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; padding: 0 10px;">
-                    <h3 style="margin: 0; font-size: 18px;">Page ${imgObj.page}</h3>
+                    <h3 id="modal-img-title" style="margin: 0; font-size: 18px;"></h3>
                     <button id="close-img-modal" style="padding: 8px 16px; background: #fff; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
                 </div>
                 <div id="modal-img-container" style="display: flex; align-items: center; justify-content: center; width: 100%; max-width: 900px; max-height: 80vh; overflow: auto;"></div>
@@ -320,25 +315,27 @@ const PdfToJpgController = (function() {
             document.body.appendChild(modal);
             
             document.getElementById('close-img-modal').addEventListener('click', function() {
-                modal.remove();
+                modal.style.display = 'none';
             });
-        } else {
-            modal.querySelector('h3').textContent = 'Page ' + imgObj.page;
-            modal.style.display = 'flex';
-        }
+        } 
+        
+        document.getElementById('modal-img-title').textContent = 'Page ' + imgObj.page;
+        modal.style.display = 'flex';
 
         var container = document.getElementById('modal-img-container');
         container.innerHTML = '';
+        
         // Use higher quality for the full-screen modal view
-        var fullUrl = imgObj.canvas.toDataURL('image/jpeg', 0.9);
+        var fullUrl = imgObj.canvas.toDataURL('image/jpeg', 0.95);
         var imgEl = document.createElement('img');
         imgEl.src = fullUrl;
         imgEl.style.cssText = 'max-width: 100%; max-height: 80vh; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 4px; background: white;';
         container.appendChild(imgEl);
     }
 
-    function downloadSingleImage(imgObj) {
-        var dataURL = imgObj.canvas.toDataURL('image/jpeg', 0.9);
+    function saveSingleImage(index) {
+        var imgObj = resultImages[index];
+        var dataURL = imgObj.canvas.toDataURL('image/jpeg', 0.95);
         var link = document.createElement('a');
         link.download = 'page_' + imgObj.page + '.jpg';
         link.href = dataURL;
@@ -346,27 +343,6 @@ const PdfToJpgController = (function() {
         link.click();
         document.body.removeChild(link);
         showToast('success', 'Downloaded page ' + imgObj.page);
-    }
-
-    function downloadAll() {
-        var indices = getSelectedIndices();
-        if (indices.length === 0) {
-            showToast('warning', 'Please select at least one image');
-            return;
-        }
-
-        for (var i = 0; i < indices.length; i++) {
-            var img = resultImages[indices[i]];
-            var dataURL = img.canvas.toDataURL('image/jpeg', 0.9);
-            var link = document.createElement('a');
-            link.download = 'page_' + img.page + '.jpg';
-            link.href = dataURL;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        showToast('success', 'Downloaded ' + indices.length + ' images');
     }
 
     async function downloadZip() {
@@ -382,7 +358,7 @@ const PdfToJpgController = (function() {
             var files = [];
             for (var i = 0; i < indices.length; i++) {
                 var img = resultImages[indices[i]];
-                var blob = await FileHelpers.canvasToBlob(img.canvas, 'image/jpeg', 0.9);
+                var blob = await FileHelpers.canvasToBlob(img.canvas, 'image/jpeg', 0.95);
                 files.push({
                     filename: 'page_' + img.page + '.jpg',
                     data: blob
