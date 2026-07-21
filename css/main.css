@@ -3589,3 +3589,36 @@ body {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* ============================================
+   ROTATE IMAGE TOOL STYLES
+   ============================================ */
+.canvas-container {
+    background: var(--md-surface-variant);
+    border-radius: 12px;
+    padding: 20px;
+    overflow: auto;
+    max-height: 70vh;
+}
+
+#rotateImgCanvas {
+    box-shadow: var(--md-shadow-md);
+    background: white;
+}
+
+[data-theme="dark"] #rotateImgCanvas {
+    background: var(--md-surface);
+}
+
+@media (max-width: 768px) {
+    .canvas-container {
+        padding: 12px;
+    }
+    
+    #rotateImgControls .result-actions {
+        flex-direction: column;
+    }
+    
+    #rotateImgControls .btn {
+        width: 100%;
+    }
+}
