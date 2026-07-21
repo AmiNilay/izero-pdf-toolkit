@@ -1,15 +1,24 @@
 /**
  * PDF to JPG - UI Controller
+ *
+ * Features:
+ * - Upload PDF and convert each page to JPG
+ * - Select individual pages via checkboxes
+ * - "Select All" toggles all checkboxes with live counter
+ * - View high-quality image in full-screen modal (click thumbnail or "View" button)
+ * - Individual "Save" button per image for single-page downloads
+ * - Single "Download Selected as ZIP" button for bulk export
+ * - Mobile responsive grid with stacked buttons on small screens
  */
 
 const PdfToJpgController = (function() {
     'use strict';
 
-    var currentFile = null;
-    var resultImages = [];
+    let currentFile = null;
+    let resultImages = [];
 
     function render() {
-        var container = document.getElementById('toolContent');
+        const container = document.getElementById('toolContent');
         if (!container) return;
 
         container.innerHTML = `
@@ -65,9 +74,9 @@ const PdfToJpgController = (function() {
                             <p id="jpgInfo"></p>
                         </div>
                     </div>
-                    <div class="result-actions" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px;">
-                        <button class="btn btn-success" id="downloadJpgZip" style="flex: 1; min-width: 200px;">
-                            <span class="material-symbols-outlined">folder_zip</span> Download Selected (ZIP)
+                    <div class="result-actions">
+                        <button class="btn btn-success" id="downloadJpgZip">
+                            <span class="material-symbols-outlined">folder_zip</span> Download Selected as ZIP
                         </button>
                     </div>
                 </div>
@@ -80,11 +89,12 @@ const PdfToJpgController = (function() {
     }
 
     function attachEvents() {
-        var fileInput = document.getElementById('pdfJpgFileInput');
-        var uploadArea = document.getElementById('pdfJpgUploadArea');
-        var convertBtn = document.getElementById('convertToJpgBtn');
-        var qualityRange = document.getElementById('jpgQuality');
-        var qualityLabel = document.getElementById('jpgQualityValue');
+        const fileInput = document.getElementById('pdfJpgFileInput');
+        const uploadArea = document.getElementById('pdfJpgUploadArea');
+        const convertBtn = document.getElementById('convertToJpgBtn');
+        const qualityRange = document.getElementById('jpgQuality');
+        const qualityLabel = document.getElementById('jpgQualityValue');
+        const downloadZipBtn = document.getElementById('downloadJpgZip');
 
         if (qualityRange && qualityLabel) {
             qualityRange.addEventListener('input', function() {
@@ -94,7 +104,7 @@ const PdfToJpgController = (function() {
 
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
-                var file = this.files[0];
+                const file = this.files[0];
                 if (file && Validators.isPDF(file)) {
                     handleFile(file);
                 } else {
@@ -115,7 +125,7 @@ const PdfToJpgController = (function() {
             uploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('dragover');
-                var file = e.dataTransfer.files[0];
+                const file = e.dataTransfer.files[0];
                 if (file && Validators.isPDF(file)) {
                     handleFile(file);
                 }
@@ -126,17 +136,19 @@ const PdfToJpgController = (function() {
             convertBtn.addEventListener('click', convertToJpg);
         }
 
-        document.getElementById('downloadJpgZip').addEventListener('click', downloadZip);
+        if (downloadZipBtn) {
+            downloadZipBtn.addEventListener('click', downloadZip);
+        }
     }
 
     async function handleFile(file) {
         currentFile = file;
-        
+
         try {
-            var info = await PDFProcessor.getPDFInfo(file);
-            
-            var infoDiv = document.getElementById('pdfJpgInfo');
-            var details = document.getElementById('pdfJpgFileDetails');
+            const info = await PDFProcessor.getPDFInfo(file);
+
+            const infoDiv = document.getElementById('pdfJpgInfo');
+            const details = document.getElementById('pdfJpgFileDetails');
             if (infoDiv && details) {
                 infoDiv.style.display = 'block';
                 details.textContent = '📄 ' + file.name + ' (' + info.totalPages + ' pages)';
@@ -145,7 +157,7 @@ const PdfToJpgController = (function() {
             document.getElementById('convertToJpgBtn').disabled = false;
             document.getElementById('jpgResult').style.display = 'none';
             document.getElementById('jpgPreview').style.display = 'none';
-            
+
             showToast('success', 'Loaded PDF with ' + info.totalPages + ' pages');
 
         } catch (error) {
@@ -160,13 +172,13 @@ const PdfToJpgController = (function() {
             return;
         }
 
-        var convertBtn = document.getElementById('convertToJpgBtn');
+        const convertBtn = document.getElementById('convertToJpgBtn');
         convertBtn.disabled = true;
         convertBtn.textContent = 'Converting...';
 
         try {
-            var dpi = parseInt(document.getElementById('jpgDpi').value);
-            var quality = parseInt(document.getElementById('jpgQuality').value) / 100;
+            const dpi = parseInt(document.getElementById('jpgDpi').value);
+            const quality = parseInt(document.getElementById('jpgQuality').value) / 100;
 
             resultImages = await PDFProcessor.pdfToImages(currentFile, {
                 dpi: dpi,
@@ -175,9 +187,9 @@ const PdfToJpgController = (function() {
             });
 
             displayResults(resultImages);
-            
+
             document.getElementById('jpgResult').style.display = 'block';
-            document.getElementById('jpgInfo').textContent = resultImages.length + ' pages converted. Select the ones you want to download.';
+            document.getElementById('jpgInfo').textContent = resultImages.length + ' pages converted. Select pages and download as ZIP, or save individually.';
 
             showToast('success', 'Converted ' + resultImages.length + ' pages to JPG');
 
@@ -191,7 +203,7 @@ const PdfToJpgController = (function() {
     }
 
     function displayResults(images) {
-        var preview = document.getElementById('jpgPreview');
+        const preview = document.getElementById('jpgPreview');
         if (!preview) return;
 
         if (!images || images.length === 0) {
@@ -200,143 +212,142 @@ const PdfToJpgController = (function() {
             return;
         }
 
-        // Mobile responsive header
-        var html = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 500; font-size: 15px;">
-                    <input type="checkbox" id="selectAllJpg" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--md-sys-color-primary, #2563eb);"> 
-                    Select All (${images.length} pages)
+        let html = `
+            <div class="preview-toolbar">
+                <label class="select-all-label">
+                    <input type="checkbox" id="selectAllJpg" checked>
+                    Select All
                 </label>
-                <span id="selectedCountText" style="font-size: 14px; color: var(--md-sys-color-on-surface-variant, #6b7280);">${images.length} of ${images.length} selected</span>
+                <span id="selectedCountText">${images.length} of ${images.length} selected</span>
             </div>
-            <div class="preview-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;">
+            <div class="preview-grid">
         `;
-        
-        for (var i = 0; i < images.length; i++) {
-            var img = images[i];
-            // Use lower quality for grid thumbnails to save memory and improve load speed
-            var thumbUrl = img.canvas.toDataURL('image/jpeg', 0.5); 
-            
+
+        for (let i = 0; i < images.length; i++) {
+            const img = images[i];
+            const thumbUrl = img.canvas.toDataURL('image/jpeg', 0.6);
+
             html += `
-                <div class="preview-item" style="position: relative; background: var(--md-sys-color-surface-container, #f9fafb); border-radius: 12px; padding: 12px; border: 1px solid var(--md-sys-color-outline-variant, #e5e7eb); display: flex; flex-direction: column; box-sizing: border-box;">
-                    <div style="position: absolute; top: 16px; left: 16px; z-index: 2;">
-                        <input type="checkbox" class="img-select-checkbox" data-index="${i}" checked style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--md-sys-color-primary, #2563eb);">
+                <div class="preview-item" data-index="${i}">
+                    <div class="preview-thumb-wrapper">
+                        <input type="checkbox" class="img-select-checkbox" data-index="${i}" checked>
+                        <div class="preview-thumb" onclick="PdfToJpgController.viewImage(${i})">
+                            <img src="${thumbUrl}" alt="Page ${img.page}" loading="lazy">
+                        </div>
                     </div>
-                    <div style="width: 100%; aspect-ratio: 1/1.414; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; margin-top: 8px;">
-                        <img src="${thumbUrl}" alt="Page ${img.page}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    <div class="preview-item-info">
+                        <span class="preview-page-label">Page ${img.page}</span>
                     </div>
-                    <div style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface, #1f2937); text-align: center; margin-bottom: 12px;">Page ${img.page}</div>
-                    <div style="display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap;">
-                        <button class="btn btn-secondary view-img-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0; min-width: 60px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">visibility</span> View
+                    <div class="preview-item-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="PdfToJpgController.viewImage(${i}); event.stopPropagation();">
+                            <span class="material-symbols-outlined">visibility</span> View
                         </button>
-                        <button class="btn btn-primary save-img-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 12px; margin: 0; min-width: 60px;">
-                            <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">download</span> Save
+                        <button class="btn btn-primary btn-sm" onclick="PdfToJpgController.saveImage(${i}); event.stopPropagation();">
+                            <span class="material-symbols-outlined">download</span> Save
                         </button>
                     </div>
                 </div>
             `;
         }
-        
+
         html += '</div>';
         preview.innerHTML = html;
         preview.style.display = 'block';
 
         // Attach selection events
-        document.getElementById('selectAllJpg').addEventListener('change', toggleSelectAll);
-        document.querySelectorAll('.img-select-checkbox').forEach(function(cb) {
+        const selectAllCheckbox = document.getElementById('selectAllJpg');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                const isChecked = this.checked;
+                document.querySelectorAll('.img-select-checkbox').forEach(cb => {
+                    cb.checked = isChecked;
+                });
+                updateSelectedCount();
+            });
+        }
+
+        document.querySelectorAll('.img-select-checkbox').forEach(cb => {
             cb.addEventListener('change', updateSelectedCount);
         });
 
-        // Attach individual view events
-        document.querySelectorAll('.view-img-btn').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                var idx = parseInt(this.getAttribute('data-index'));
-                showImageModal(idx);
-            });
-        });
-
-        // Attach individual save events
-        document.querySelectorAll('.save-img-btn').forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                e.preventDefault();
-                var idx = parseInt(this.getAttribute('data-index'));
-                saveSingleImage(idx);
-            });
-        });
-    }
-
-    function getSelectedIndices() {
-        var indices = [];
-        document.querySelectorAll('.img-select-checkbox').forEach(function(cb) {
-            if (cb.checked) {
-                indices.push(parseInt(cb.getAttribute('data-index')));
-            }
-        });
-        return indices;
-    }
-
-    function toggleSelectAll() {
-        var isChecked = document.getElementById('selectAllJpg').checked;
-        document.querySelectorAll('.img-select-checkbox').forEach(function(cb) {
-            cb.checked = isChecked;
-        });
         updateSelectedCount();
     }
 
     function updateSelectedCount() {
-        var total = document.querySelectorAll('.img-select-checkbox').length;
-        var selected = document.querySelectorAll('.img-select-checkbox:checked').length;
-        document.getElementById('selectedCountText').textContent = selected + ' of ' + total + ' selected';
-        document.getElementById('selectAllJpg').checked = (selected === total);
-        
-        // Disable ZIP button if nothing is selected
-        var downloadZipBtn = document.getElementById('downloadJpgZip');
-        downloadZipBtn.disabled = (selected === 0);
+        const checkboxes = document.querySelectorAll('.img-select-checkbox');
+        const checkedBoxes = document.querySelectorAll('.img-select-checkbox:checked');
+        const total = checkboxes.length;
+        const selected = checkedBoxes.length;
+
+        const countText = document.getElementById('selectedCountText');
+        if (countText) {
+            countText.textContent = selected + ' of ' + total + ' selected';
+        }
+
+        const selectAllCheckbox = document.getElementById('selectAllJpg');
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = (selected === total && total > 0);
+        }
+
+        const downloadZipBtn = document.getElementById('downloadJpgZip');
+        if (downloadZipBtn) {
+            downloadZipBtn.disabled = (selected === 0);
+            downloadZipBtn.style.opacity = (selected === 0) ? '0.5' : '1';
+        }
     }
 
-    function showImageModal(index) {
-        var imgObj = resultImages[index];
-        var modal = document.getElementById('img-preview-modal');
-        
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'img-preview-modal';
-            modal.style.cssText = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; backdrop-filter: blur(4px);";
-            
-            modal.innerHTML = `
-                <div style="width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; padding: 0 10px;">
-                    <h3 id="modal-img-title" style="margin: 0; font-size: 18px;"></h3>
-                    <button id="close-img-modal" style="padding: 8px 16px; background: #fff; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
+    function viewImage(index) {
+        if (!resultImages[index]) return;
+
+        const imgObj = resultImages[index];
+        let modal = document.getElementById('img-preview-modal');
+
+        if (modal) {
+            modal.remove();
+        }
+
+        modal = document.createElement('div');
+        modal.id = 'img-preview-modal';
+        modal.className = 'img-preview-modal';
+
+        const fullUrl = imgObj.canvas.toDataURL('image/jpeg', 0.95);
+
+        modal.innerHTML = `
+            <div class="img-modal-overlay" onclick="document.getElementById('img-preview-modal').remove();"></div>
+            <div class="img-modal-content">
+                <div class="img-modal-header">
+                    <span class="img-modal-title">Page ${imgObj.page}</span>
+                    <button id="close-img-modal" class="img-modal-close-btn">✕ Close</button>
                 </div>
-                <div id="modal-img-container" style="display: flex; align-items: center; justify-content: center; width: 100%; max-width: 900px; max-height: 80vh; overflow: auto;"></div>
-            `;
-            document.body.appendChild(modal);
-            
-            document.getElementById('close-img-modal').addEventListener('click', function() {
-                modal.style.display = 'none';
-            });
-        } 
-        
-        document.getElementById('modal-img-title').textContent = 'Page ' + imgObj.page;
-        modal.style.display = 'flex';
+                <div class="img-modal-body">
+                    <img src="${fullUrl}" alt="Page ${imgObj.page}" class="img-modal-image">
+                </div>
+            </div>
+        `;
 
-        var container = document.getElementById('modal-img-container');
-        container.innerHTML = '';
-        
-        // Use higher quality for the full-screen modal view
-        var fullUrl = imgObj.canvas.toDataURL('image/jpeg', 0.95);
-        var imgEl = document.createElement('img');
-        imgEl.src = fullUrl;
-        imgEl.style.cssText = 'max-width: 100%; max-height: 80vh; object-fit: contain; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-radius: 4px; background: white;';
-        container.appendChild(imgEl);
+        document.body.appendChild(modal);
+
+        // Close button
+        document.getElementById('close-img-modal').addEventListener('click', function() {
+            modal.remove();
+        });
+
+        // Close on Escape key
+        function closeOnEscape(e) {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', closeOnEscape);
+            }
+        }
+        document.addEventListener('keydown', closeOnEscape);
     }
 
-    function saveSingleImage(index) {
-        var imgObj = resultImages[index];
-        var dataURL = imgObj.canvas.toDataURL('image/jpeg', 0.95);
-        var link = document.createElement('a');
+    function saveImage(index) {
+        if (!resultImages[index]) return;
+
+        const imgObj = resultImages[index];
+        const dataURL = imgObj.canvas.toDataURL('image/jpeg', 0.95);
+        const link = document.createElement('a');
         link.download = 'page_' + imgObj.page + '.jpg';
         link.href = dataURL;
         document.body.appendChild(link);
@@ -346,37 +357,45 @@ const PdfToJpgController = (function() {
     }
 
     async function downloadZip() {
-        var indices = getSelectedIndices();
+        const checkboxes = document.querySelectorAll('.img-select-checkbox:checked');
+        const indices = [];
+        checkboxes.forEach(cb => {
+            indices.push(parseInt(cb.getAttribute('data-index')));
+        });
+
         if (indices.length === 0) {
             showToast('warning', 'Please select at least one image');
             return;
         }
 
         try {
-            showToast('info', 'Creating ZIP...');
-            
-            var files = [];
-            for (var i = 0; i < indices.length; i++) {
-                var img = resultImages[indices[i]];
-                var blob = await FileHelpers.canvasToBlob(img.canvas, 'image/jpeg', 0.95);
+            showToast('info', 'Creating ZIP with ' + indices.length + ' images...');
+
+            const files = [];
+            for (let i = 0; i < indices.length; i++) {
+                const img = resultImages[indices[i]];
+                const blob = await FileHelpers.canvasToBlob(img.canvas, 'image/jpeg', 0.95);
                 files.push({
                     filename: 'page_' + img.page + '.jpg',
                     data: blob
                 });
             }
-            
-            var zip = await ZipHelpers.createZip(files);
+
+            const zip = await ZipHelpers.createZip(files);
             DownloadHelpers.downloadBlob(zip, 'pdf_pages.zip');
-            
-            showToast('success', 'ZIP file downloaded');
+
+            showToast('success', 'Downloaded ' + indices.length + ' images as ZIP');
         } catch (error) {
             console.error('ZIP creation error:', error);
             showToast('error', 'Failed to create ZIP: ' + error.message);
         }
     }
 
+    // Expose public methods
     return {
-        render: render
+        render: render,
+        viewImage: viewImage,
+        saveImage: saveImage
     };
 
 })();
