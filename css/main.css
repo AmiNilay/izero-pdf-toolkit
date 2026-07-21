@@ -2807,3 +2807,143 @@ body {
         aspect-ratio: 1/1.414;
     }
 }
+/* ============================================
+   ORGANIZE PDF TOOL - PREVIEW STYLES
+   ============================================ */
+
+.page-organizer {
+    margin: 20px 0;
+}
+
+.organizer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.organizer-item {
+    background: var(--md-sys-color-surface-container, #f9fafb);
+    border: 2px solid var(--md-sys-color-outline-variant, #e5e7eb);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: move;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.organizer-item:hover {
+    border-color: var(--md-sys-color-primary, #2563eb);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+}
+
+.organizer-item.dragging {
+    opacity: 0.5;
+    border-color: var(--md-sys-color-primary, #2563eb);
+    border-style: dashed;
+}
+
+.organizer-preview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1/1.414;
+    background: white;
+    overflow: hidden;
+}
+
+.page-canvas {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.organizer-overlay {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--md-sys-color-primary, #2563eb);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.organizer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: var(--md-sys-color-surface-container-high, #f3f4f6);
+    border-top: 1px solid var(--md-sys-color-outline-variant, #e5e7eb);
+}
+
+.organizer-handle {
+    color: var(--md-sys-color-on-surface-variant, #6b7280);
+    cursor: grab;
+    font-size: 20px;
+    user-select: none;
+}
+
+.organizer-handle:active {
+    cursor: grabbing;
+}
+
+.organizer-delete {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: var(--md-sys-color-error-container, #fee2e2);
+    color: var(--md-sys-color-on-error-container, #991b1b);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.organizer-delete:hover {
+    background: var(--md-sys-color-error, #ef4444);
+    color: white;
+    transform: scale(1.1);
+}
+
+.organizer-delete .material-symbols-outlined {
+    font-size: 18px;
+}
+
+/* Settings group buttons */
+.settings-group .btn {
+    margin-right: 8px;
+    margin-bottom: 8px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .organizer-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .organizer-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    
+    .organizer-actions {
+        padding: 8px;
+    }
+    
+    .organizer-handle {
+        font-size: 18px;
+    }
+}

@@ -1,5 +1,5 @@
 /**
- * Organize PDF - UI Controller
+ * Organize PDF - UI Controller with Live Preview
  */
 
 const OrganizePdfToolController = (function() {
@@ -9,6 +9,8 @@ const OrganizePdfToolController = (function() {
     var totalPages = 0;
     var pageOrder = [];
     var dragIndex = null;
+    var pdfDocument = null;
+    var pageThumbnails = [];
 
     function render() {
         var container = document.getElementById('toolContent');
@@ -44,7 +46,7 @@ const OrganizePdfToolController = (function() {
 
                 <div class="settings-group">
                     <button class="btn btn-secondary" id="organizeDuplicateBtn">
-                        <span class="material-symbols-outlined">content_copy</span> Duplicate Selected
+                        <span class="material-symbols-outlined">content_copy</span> Duplicate Last
                     </button>
                     <button class="btn btn-secondary" id="organizeReverseBtn">
                         <span class="material-symbols-outlined">swap_vert</span> Reverse All
@@ -54,7 +56,7 @@ const OrganizePdfToolController = (function() {
                     </button>
                 </div>
 
-                <button class="btn btn-primary" id="organizeApplyBtn" disabled>
+                <button class="btn btn-primary btn-lg" id="organizeApplyBtn" disabled>
                     <span class="material-symbols-outlined">save</span> Apply Changes
                 </button>
 
@@ -75,6 +77,9 @@ const OrganizePdfToolController = (function() {
                         <button class="btn btn-success" id="organizeDownloadBtn">
                             <span class="material-symbols-outlined">download</span> Download Organized PDF
                         </button>
+                        <button class="btn btn-secondary" id="organizeAgainBtn">
+                            <span class="material-symbols-outlined">refresh</span> Organize Another PDF
+                        </button>
                     </div>
                 </div>
             </div>
@@ -90,6 +95,7 @@ const OrganizePdfToolController = (function() {
         var duplicateBtn = document.getElementById('organizeDuplicateBtn');
         var reverseBtn = document.getElementById('organizeReverseBtn');
         var resetBtn = document.getElementById('organizeResetBtn');
+        var organizeAgainBtn = document.getElementById('organizeAgainBtn');
 
         if (fileInput) {
             fileInput.addEventListener('change', function(e) {
@@ -125,6 +131,16 @@ const OrganizePdfToolController = (function() {
         if (duplicateBtn) duplicateBtn.addEventListener('click', duplicateSelected);
         if (reverseBtn) reverseBtn.addEventListener('click', reversePages);
         if (resetBtn) resetBtn.addEventListener('click', resetOrder);
+        if (organizeAgainBtn) {
+            organizeAgainBtn.addEventListener('click', function() {
+                document.getElementById('organizeResult').style.display = 'none';
+                document.getElementById('pageOrganizer').innerHTML = '';
+                pageOrder = [];
+                pageThumbnails = [];
+                pdfDocument = null;
+                currentFile = null;
+            });
+        }
 
         var downloadBtn = document.getElementById('organizeDownloadBtn');
         if (downloadBtn) downloadBtn.addEventListener('click', downloadOrganized);
@@ -133,8 +149,13 @@ const OrganizePdfToolController = (function() {
     async function handleFile(file) {
         currentFile = file;
         try {
-            totalPages = await PDFProcessor.getPDFPageCount(file);
+            // Load PDF document
+            var arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
+            pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            totalPages = pdfDocument.numPages;
+            
             pageOrder = [];
+            pageThumbnails = [];
             for (var i = 0; i < totalPages; i++) {
                 pageOrder.push(i);
             }
@@ -143,13 +164,13 @@ const OrganizePdfToolController = (function() {
             var details = document.getElementById('organizeFileDetails');
             if (infoDiv && details) {
                 infoDiv.style.display = 'block';
-                details.textContent = '📄 ' + file.name + ' (' + totalPages + ' pages, ' + FileHelpers.formatFileSize(file.size) + ')';
+                details.textContent = ' ' + file.name + ' (' + totalPages + ' pages, ' + FileHelpers.formatFileSize(file.size) + ')';
             }
 
             document.getElementById('organizeApplyBtn').disabled = false;
             document.getElementById('organizeResult').style.display = 'none';
 
-            renderOrganizer();
+            await renderOrganizer();
             showToast('success', 'Loaded PDF with ' + totalPages + ' pages');
         } catch (error) {
             console.error('Error reading PDF:', error);
@@ -157,7 +178,7 @@ const OrganizePdfToolController = (function() {
         }
     }
 
-    function renderOrganizer() {
+    async function renderOrganizer() {
         var container = document.getElementById('pageOrganizer');
         if (!container) return;
 
@@ -166,17 +187,30 @@ const OrganizePdfToolController = (function() {
             var pageNum = pageOrder[i] + 1;
             html += `
                 <div class="organizer-item" data-index="${i}" data-page="${pageOrder[i]}">
-                    <span class="organizer-number">${pageNum}</span>
-                    <span class="organizer-handle material-symbols-outlined">drag_handle</span>
-                    <button class="organizer-delete" data-index="${i}">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+                    <div class="organizer-preview">
+                        <canvas id="organizer-canvas-${i}" class="page-canvas"></canvas>
+                        <div class="organizer-overlay">
+                            <span class="organizer-number">${pageNum}</span>
+                        </div>
+                    </div>
+                    <div class="organizer-actions">
+                        <span class="organizer-handle material-symbols-outlined">drag_handle</span>
+                        <button class="organizer-delete" data-index="${i}" title="Delete page">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
                 </div>
             `;
         }
         html += '</div>';
         container.innerHTML = html;
 
+        // Render page thumbnails
+        for (var i = 0; i < pageOrder.length; i++) {
+            await renderPageThumbnail(i, pageOrder[i]);
+        }
+
+        // Attach delete events
         container.querySelectorAll('.organizer-delete').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 var index = parseInt(this.dataset.index);
@@ -184,6 +218,7 @@ const OrganizePdfToolController = (function() {
             });
         });
 
+        // Attach drag events
         container.querySelectorAll('.organizer-item').forEach(function(item) {
             item.draggable = true;
             item.addEventListener('dragstart', dragStart);
@@ -192,6 +227,34 @@ const OrganizePdfToolController = (function() {
             item.addEventListener('drop', drop);
             item.addEventListener('dragend', dragEnd);
         });
+    }
+
+    async function renderPageThumbnail(index, pageNum) {
+        if (!pdfDocument) return;
+        
+        try {
+            var canvas = document.getElementById('organizer-canvas-' + index);
+            if (!canvas) return;
+            
+            var page = await pdfDocument.getPage(pageNum + 1);
+            var ctx = canvas.getContext('2d');
+            
+            // Render at smaller scale for thumbnail
+            var viewport = page.getViewport({ scale: 0.3 });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            
+            var renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            
+            await page.render(renderContext).promise;
+            page.cleanup();
+            
+        } catch (error) {
+            console.error('Error rendering thumbnail:', error);
+        }
     }
 
     function deletePage(index) {
@@ -212,7 +275,7 @@ const OrganizePdfToolController = (function() {
 
     function dragEnter(e) {
         e.preventDefault();
-        this.style.borderColor = 'var(--md-primary)';
+        this.style.borderColor = 'var(--md-sys-color-primary, #2563eb)';
     }
 
     function dragOver(e) {
@@ -282,8 +345,13 @@ const OrganizePdfToolController = (function() {
             for (var i = 0; i < pageOrder.length; i++) {
                 var [page] = await newPdf.copyPages(pdf, [pageOrder[i]]);
                 newPdf.addPage(page);
+                
+                var progress = (i + 1) / pageOrder.length * 100;
+                window.showProgress(true, progress, 'Processing page ' + (i + 1) + '/' + pageOrder.length);
             }
 
+            window.showProgress(false);
+            
             var pdfBytes = await newPdf.save();
             var blob = new Blob([pdfBytes], { type: 'application/pdf' });
             var filename = FileHelpers.getFileNameWithoutExtension(currentFile.name) + '_organized.pdf';
