@@ -113,6 +113,7 @@ Open `http://localhost:8000` in any modern web browser.
 
 ## 📖 Documentation
 
+- [2026 Features Roadmap & Plan](docs/features-plan-2026.md)
 - [API & Architecture Guide](docs/api.md)
 - [Swiss Minimalist Design System](docs/swiss-minimalist-design.md)
 - [Audit & Fixes Log](docs/audit-and-fixes.md)
