@@ -198,6 +198,7 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 
 | Date | Phase | Feature / Task | Status | Commit / Notes |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-11-08** | **UI/UX** | Automated 10-Day Green "NEW" Feature Tag System | Completed | Automated client-side lifecycle: adds green tag to new features, auto-retires after 10 days |
 | **2026-11-08** | **Phase 2** | Client-Side OCR (`ocr-pdf`) | Completed | Tesseract.js v5 Wasm worker, multi-language, high-res PDF rendering |
 | **2026-11-08** | **Phase 2** | Irreversible PDF Redaction (`redact-pdf`) | Completed | Permanent stream-level pixel sanitization & underlying text incinerator |
 | **2026-11-08** | **Phase 2** | 1-Click Background Removal (`remove-bg`) | Completed | Local color distance thresholding, feathered edges, transparent PNG export |
@@ -213,3 +214,4 @@ Whenever any task from this plan is started, updated, or completed:
 1. Update the status checkbox (`[ ]` $\to$ `[x]`).
 2. Add an entry to the **Change Log & Progress Updates** table above with the date, feature name, status, and commit hash.
 3. Update [`docs/changelog.md`](changelog.md) and [`README.md`](../README.md) to maintain synchronization across the codebase.
+4. **New Feature Tag Convention**: When adding a new tool card to `index.html`, add `data-added="YYYY-MM-DD"` and `<span class="tool-badge tool-badge-new">★ New</span>`. The system (`js/app.js`) will display the green signal tag for **10 days** and automatically retire/remove it after 10 days without manual code intervention.

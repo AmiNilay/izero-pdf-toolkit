@@ -603,6 +603,30 @@ a {
     z-index: 2;
 }
 
+/* Green badge for new features (automatically managed for 10 days) */
+.tool-badge.tool-badge-new,
+.tool-badge-new {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #15803d !important; /* Swiss signal green */
+    color: #ffffff !important;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: var(--dp-typography-label-tracking);
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 0 !important;
+    z-index: 2;
+}
+
+/* When a card has both Popular and New badges */
+.tool-card .tool-badge:not(.tool-badge-new) ~ .tool-badge-new,
+.tool-card .tool-badge:not(.tool-badge-new) + .tool-badge-new {
+    right: auto;
+    left: 0;
+}
+
 /* Direct black-and-white state hover */
 .tool-card:hover {
     background: var(--dp-color-ink);

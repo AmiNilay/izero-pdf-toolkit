@@ -128,6 +128,9 @@
         // Initialize Stats
         initStats(cacheEnabled);
         
+        // Initialize New Feature Badges (10-day automatic lifecycle)
+        initNewFeatureBadges();
+        
         // Initialize Tool Cards
         initToolCards();
         
@@ -228,6 +231,59 @@
                 });
         }
     }
+
+    // ============================================
+    // NEW FEATURE BADGE LIFECYCLE (10-DAY AUTOMATION)
+    // ============================================
+    const NEW_FEATURE_DAYS = 10;
+    const FEATURE_RELEASE_DATES = {
+        'sign-pdf': '2026-11-08',
+        'metadata-scrubber': '2026-11-08',
+        'ocr-pdf': '2026-11-08',
+        'redact-pdf': '2026-11-08',
+        'remove-bg': '2026-11-08',
+        'image-editor': '2026-11-08'
+    };
+
+    function initNewFeatureBadges() {
+        const now = new Date();
+        const cards = document.querySelectorAll('.tool-card[data-tool]');
+        
+        cards.forEach(function(card) {
+            const tool = card.dataset.tool;
+            const releaseDateStr = card.dataset.added || FEATURE_RELEASE_DATES[tool];
+            let existingBadge = card.querySelector('.tool-badge-new');
+            
+            if (!releaseDateStr) {
+                if (existingBadge) existingBadge.remove();
+                return;
+            }
+            
+            const releaseDate = new Date(releaseDateStr + 'T00:00:00');
+            if (isNaN(releaseDate.getTime())) return;
+            
+            // Calculate elapsed days
+            const elapsedDays = (now.getTime() - releaseDate.getTime()) / (1000 * 60 * 60 * 24);
+            
+            if (elapsedDays >= 0 && elapsedDays < NEW_FEATURE_DAYS) {
+                // Feature is new (within 10-day window) -> ensure green badge is present
+                if (!existingBadge) {
+                    const inner = card.querySelector('.tool-card-inner') || card;
+                    const badge = document.createElement('span');
+                    badge.className = 'tool-badge tool-badge-new';
+                    badge.textContent = '★ New';
+                    inner.insertBefore(badge, inner.firstChild);
+                }
+            } else {
+                // Feature is 10+ days old -> automatically remove badge from DOM
+                if (existingBadge) {
+                    existingBadge.remove();
+                }
+            }
+        });
+    }
+
+    window.initNewFeatureBadges = initNewFeatureBadges;
 
     // ============================================
     // TOOL CARDS
