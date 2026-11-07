@@ -1,5 +1,5 @@
 // Service Worker for iZeroPDF
-const CACHE_NAME = 'izero-pdf-v2.2.0';
+const CACHE_NAME = 'izero-pdf-v2.3.0';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -41,6 +41,7 @@ const STATIC_ASSETS = [
     '/js/core/docxEngine.js',
     '/js/core/nupEngine.js',
     '/js/core/compareEngine.js',
+    '/js/workers/imageWorker.js',
     
     // JavaScript - UI Controllers
     '/js/ui/imageToPdf.js',

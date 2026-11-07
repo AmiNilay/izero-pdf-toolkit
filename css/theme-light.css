@@ -91,3 +91,10 @@
     background: var(--dp-color-ink);
     color: var(--dp-color-ground);
 }
+
+.tool-badge-new,
+.tool-badge.tool-badge-new {
+    background: #16a34a !important;
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+}

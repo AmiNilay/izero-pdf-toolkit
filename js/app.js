@@ -277,7 +277,12 @@
                     const badge = document.createElement('span');
                     badge.className = 'tool-badge tool-badge-new';
                     badge.textContent = '★ New';
+                    badge.style.setProperty('background-color', '#16a34a', 'important');
+                    badge.style.setProperty('color', '#ffffff', 'important');
                     inner.insertBefore(badge, inner.firstChild);
+                } else {
+                    existingBadge.style.setProperty('background-color', '#16a34a', 'important');
+                    existingBadge.style.setProperty('color', '#ffffff', 'important');
                 }
             } else {
                 // Feature is 10+ days old -> automatically remove badge from DOM

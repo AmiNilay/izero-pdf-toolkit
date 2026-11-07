@@ -605,11 +605,16 @@ a {
 
 /* Green badge for new features (automatically managed for 10 days) */
 .tool-badge.tool-badge-new,
-.tool-badge-new {
+.tool-badge-new,
+span.tool-badge-new,
+.tool-card .tool-badge-new,
+.tool-card .tool-badge.tool-badge-new,
+.tool-card-inner .tool-badge.tool-badge-new {
     position: absolute;
     top: 0;
     right: 0;
-    background: #15803d !important; /* Swiss signal green */
+    background: #16a34a !important; /* Vibrant Swiss signal green */
+    background-color: #16a34a !important;
     color: #ffffff !important;
     font-size: 10px;
     font-weight: 700;

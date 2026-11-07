@@ -198,3 +198,10 @@
     background: #ffffff;
     color: #0a0a0a;
 }
+
+[data-theme="dark"] .tool-badge-new,
+[data-theme="dark"] .tool-badge.tool-badge-new {
+    background: #16a34a !important;
+    background-color: #16a34a !important;
+    color: #ffffff !important;
+}
