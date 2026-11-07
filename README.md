@@ -55,6 +55,10 @@ iZeroPDF incorporates an editorial Swiss typography grid:
 | **Extract Images** | Scan PDF objects and extract embedded raster imagery into individual files or ZIP archives. |
 | **Protect PDF** | Add user and owner password encryption with granular permissions. |
 | **Remove Pages** | Interactive visual grid to select and strip unwanted pages from documents. |
+| **e-Sign PDF** | Draw, type, or upload transparent signatures, position on any page, and permanently embed. |
+| **Metadata Scrubber** | Inspect document info dictionaries, sanitize author/creator data, and strip EXIF/GPS tags. |
+| **Client-Side OCR** | Extract text from scanned PDFs and documents using client-side Tesseract.js Wasm. |
+| **Irreversible Redaction** | Burn blackout boxes and permanently incinerate underlying text streams and glyphs. |
 
 ### 🖼️ Image Utilities
 
@@ -67,6 +71,8 @@ iZeroPDF incorporates an editorial Swiss typography grid:
 | **Rotate & Flip** | 90° rotation increments with horizontal and vertical canvas mirroring. |
 | **Watermark Image** | Repeated diagonal and center text watermarks with customizable opacity and color. |
 | **Photo Resizer** | Pre-calibrated aspect ratios and dimension standards for passports, IDs, and social platforms. |
+| **Image Editor** | In-browser canvas filter adjustments (brightness, contrast, saturation, blur, grayscale). |
+| **Remove Background** | 1-click client-side background removal with feathered edges and transparent PNG export. |
 
 ---
 

@@ -1,5 +1,5 @@
 // Service Worker for iZeroPDF
-const CACHE_NAME = 'izero-pdf-v2.0.0';
+const CACHE_NAME = 'izero-pdf-v2.1.0';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -32,6 +32,10 @@ const STATIC_ASSETS = [
     '/js/core/imageConverter.js',
     '/js/core/imageEditorEngine.js',
     '/js/core/signEngine.js',
+    '/js/core/metadataEngine.js',
+    '/js/core/ocrEngine.js',
+    '/js/core/redactEngine.js',
+    '/js/core/bgRemovalEngine.js',
     
     // JavaScript - UI Controllers
     '/js/ui/imageToPdf.js',
@@ -50,6 +54,10 @@ const STATIC_ASSETS = [
     '/js/ui/imageConverterTool.js',
     '/js/ui/imageEditorTool.js',
     '/js/ui/signTool.js',
+    '/js/ui/metadataTool.js',
+    '/js/ui/ocrTool.js',
+    '/js/ui/redactTool.js',
+    '/js/ui/bgRemovalTool.js',
     '/js/ui/rotateImageTool.js',
     '/js/ui/watermarkTool.js',
     
@@ -59,7 +67,8 @@ const STATIC_ASSETS = [
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
     'https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js',
+    'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'
 ];
 
 // Install Event - Cache static assets

@@ -73,6 +73,8 @@
     <script src="https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Tesseract.js for Client-Side Wasm OCR -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 </head>
 <body>
     <!-- ============================================
@@ -406,6 +408,27 @@
                             <p>Draw, type, or upload digital signature</p>
                         </div>
                     </div>
+                    <div class="tool-card" data-tool="metadata-scrubber">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">shield_person</span>
+                            <h3>Scrub Metadata</h3>
+                            <p>Wipe author info, GPS tags & EXIF</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="ocr-pdf">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">document_scanner</span>
+                            <h3>Client-Side OCR</h3>
+                            <p>Extract searchable text from scans</p>
+                        </div>
+                    </div>
+                    <div class="tool-card" data-tool="redact-pdf">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">ink_eraser</span>
+                            <h3>Redact PDF</h3>
+                            <p>Permanently blackout sensitive info</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -480,6 +503,13 @@
                             <p>Crop, round corners, rotate & watermark</p>
                         </div>
                     </div>
+                    <div class="tool-card" data-tool="remove-bg">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">auto_fix_high</span>
+                            <h3>Remove Background</h3>
+                            <p>Extract transparent signatures & logos</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -543,6 +573,10 @@
     <script src="js/core/imageConverter.js"></script>
     <script src="js/core/imageEditorEngine.js"></script>
     <script src="js/core/signEngine.js"></script>
+    <script src="js/core/metadataEngine.js"></script>
+    <script src="js/core/ocrEngine.js"></script>
+    <script src="js/core/redactEngine.js"></script>
+    <script src="js/core/bgRemovalEngine.js"></script>
     
     <!-- UI Controllers -->
     <script src="js/ui/imageToPdf.js"></script>
@@ -561,6 +595,10 @@
     <script src="js/ui/imageConverterTool.js"></script>
     <script src="js/ui/imageEditorTool.js"></script>
     <script src="js/ui/signTool.js"></script>
+    <script src="js/ui/metadataTool.js"></script>
+    <script src="js/ui/ocrTool.js"></script>
+    <script src="js/ui/redactTool.js"></script>
+    <script src="js/ui/bgRemovalTool.js"></script>
     
     <!-- New Tools -->
     <script src="js/ui/rotateImageTool.js"></script>

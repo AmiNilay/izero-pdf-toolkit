@@ -28,11 +28,15 @@ const Router = (function() {
         'compress': { title: 'Compress', render: renderCompressTool },
         'lock': { title: 'Lock PDF', render: renderLockTool },
         'sign-pdf': { title: 'Sign PDF', render: renderSignTool },
+        'metadata-scrubber': { title: 'Scrub Metadata', render: renderMetadataScrubber },
+        'redact-pdf': { title: 'Redact PDF', render: renderRedactTool },
         'remove-pages': { title: 'Remove Pages', render: renderRemovePagesTool },
 
-        // Conversion
+        // Conversion & OCR
+        'ocr-pdf': { title: 'Client-Side OCR', render: renderOcrTool },
         'pdf-to-jpg': { title: 'PDF to JPG', render: renderPdfToJpgTool },
         'image-converter': { title: 'Convert Images', render: renderImageConverter },
+        'remove-bg': { title: 'Remove Background', render: renderBgRemovalTool },
 
         // Image Editor
         'image-editor': { title: 'Image Editor', render: renderImageEditor }
@@ -212,10 +216,14 @@ const Router = (function() {
     function renderOrganizePdf() { showPage('tool'); if (typeof OrganizePdfToolController !== 'undefined') OrganizePdfToolController.render(); else showError('Organize PDF tool not loaded'); }
     function renderLockTool() { showPage('tool'); if (typeof LockToolController !== 'undefined') LockToolController.render(); else showError('Lock tool not loaded'); }
     function renderSignTool() { showPage('tool'); if (typeof SignToolController !== 'undefined') SignToolController.render(); else showError('Sign PDF tool not loaded'); }
+    function renderMetadataScrubber() { showPage('tool'); if (typeof MetadataToolController !== 'undefined') MetadataToolController.render(); else showError('Metadata Scrubber tool not loaded'); }
+    function renderRedactTool() { showPage('tool'); if (typeof RedactToolController !== 'undefined') RedactToolController.render(); else showError('Redact PDF tool not loaded'); }
     function renderRemovePagesTool() { showPage('tool'); if (typeof RemovePagesToolController !== 'undefined') RemovePagesToolController.render(); else showError('Remove Pages tool not loaded'); }
+    function renderOcrTool() { showPage('tool'); if (typeof OcrToolController !== 'undefined') OcrToolController.render(); else showError('OCR tool not loaded'); }
     function renderPdfToJpgTool() { showPage('tool'); if (typeof PdfToJpgController !== 'undefined') PdfToJpgController.render(); else showError('PDF to JPG tool not loaded'); }
     function renderImageConverter() { showPage('tool'); if (typeof ImageConverterToolController !== 'undefined') ImageConverterToolController.render(); else showError('Image Converter tool not loaded'); }
     function renderImageEditor() { showPage('tool'); if (typeof ImageEditorToolController !== 'undefined') ImageEditorToolController.render(); else showError('Image Editor tool not loaded'); }
+    function renderBgRemovalTool() { showPage('tool'); if (typeof BgRemovalToolController !== 'undefined') BgRemovalToolController.render(); else showError('Remove Background tool not loaded'); }
 
     return {
         init: init,

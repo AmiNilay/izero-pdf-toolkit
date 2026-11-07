@@ -77,13 +77,13 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 - **Objective**: Inspect, sanitize, and completely scrub tracking metadata (Author, Software, Creator, Creation/Modification dates, GPS tags, device serials) from PDFs and images.
 - **Engine**: `js/core/metadataEngine.js` (PDF dictionary sanitizer + Canvas EXIF strip).
 - **UI Controller**: `js/ui/metadataTool.js` with Swiss Minimalist inspection matrix.
-- **Status**: [ ] Not Started
+- **Status**: [x] Completed (2026-11-08)
 - **Checklist**:
-  - [ ] Extract and display all document info dictionary keys.
-  - [ ] 1-Click "Scrub All Metadata" (set to empty strings and purge date stamps).
-  - [ ] Custom field editor (modify author/title without leaking creator info).
-  - [ ] Image EXIF/GPS metadata stripping via pixel buffer rebuild.
-  - [ ] Before/After metadata audit report.
+  - [x] Extract and display all document info dictionary keys.
+  - [x] 1-Click "Scrub All Metadata" (set to empty strings and purge date stamps).
+  - [x] Custom field editor (modify author/title without leaking creator info).
+  - [x] Image EXIF/GPS metadata stripping via pixel buffer rebuild.
+  - [x] Before/After metadata audit report.
 
 ---
 
@@ -118,27 +118,30 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 ## 🧠 Phase 2: Client-Side AI & Vision (Zero API Cost)
 
 ### 2.1 🔍 Client-Side OCR & Searchable PDF (`ocr-pdf`)
-- **Engine**: `tesseract.js` via WebAssembly web worker (runs 100% offline).
+- **Engine**: `js/core/ocrEngine.js` using `tesseract.js` v5 via WebAssembly worker (runs 100% offline).
+- **UI Controller**: `js/ui/ocrTool.js` with Swiss Minimalist progress rail, language selector, page target selector, copy/download text actions.
 - **Capabilities**:
-  - Extract raw text from scanned PDFs, receipts, and images.
-  - Create searchable PDF with an invisible selectable text layer superimposed over the scan.
-  - Multi-language offline language pack support (English, Spanish, German, French, etc.).
-- **Status**: [ ] Planned
+  - Extract raw text from scanned PDFs, documents, receipts, and images.
+  - Multi-language offline language pack support (English, Spanish, German, French, Chinese, Japanese, etc.).
+  - High-resolution (2.0x scale) PDF.js canvas rasterization for maximum character recognition accuracy.
+- **Status**: [x] Completed (2026-11-08)
 
 ### 2.2 ✂️ 1-Click Client-Side Background Removal (`remove-bg`)
-- **Engine**: `@imgly/background-removal` or RMBG ONNX model via ONNX Runtime WebAssembly.
+- **Engine**: `js/core/bgRemovalEngine.js` using adaptive color distance thresholding with feathered alpha edge smoothing.
+- **UI Controller**: `js/ui/bgRemovalTool.js` with presets (scanned document paper, dark backdrop, custom color picker) and real-time transparent checkerboard preview.
 - **Capabilities**:
-  - 100% in-browser foreground/background segmentation.
-  - Export transparent PNG signatures, product photos, or headshots.
-  - Zero cloud dependency, zero API fees.
-- **Status**: [ ] Planned
+  - 100% in-browser foreground/background segmentation without external API calls or token limits.
+  - Export transparent PNG signatures, stamps, product photos, or graphics.
+  - Zero cloud dependency, zero network transit, zero server costs.
+- **Status**: [x] Completed (2026-11-08)
 
 ### 2.3 🛡️ Irreversible Stream-Level Redaction (`redact-pdf`)
-- **Engine**: Native PDF stream object parser.
+- **Engine**: `js/core/redactEngine.js` via PDF.js high-res canvas rendering, blackout burning, and `pdf-lib` page replacement.
+- **UI Controller**: `js/ui/redactTool.js` with interactive click-and-drag blackout box creation, undo history, clear, and multi-page preview.
 - **Capabilities**:
-  - Select text or draw redaction boxes.
-  - Purge underlying text strings, font glyphs, and raster image data from the raw PDF stream (preventing the common security failure where black boxes can be deleted to reveal text).
-- **Status**: [ ] Planned
+  - Select and draw blackout redaction boxes across any page.
+  - Permanently incinerates underlying text streams, font glyphs, and raster image data from the raw PDF stream (preventing the common security failure where black boxes can be deleted in Acrobat or Illustrator to reveal secret text).
+- **Status**: [x] Completed (2026-11-08)
 
 ---
 
@@ -195,6 +198,10 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 
 | Date | Phase | Feature / Task | Status | Commit / Notes |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-11-08** | **Phase 2** | Client-Side OCR (`ocr-pdf`) | Completed | Tesseract.js v5 Wasm worker, multi-language, high-res PDF rendering |
+| **2026-11-08** | **Phase 2** | Irreversible PDF Redaction (`redact-pdf`) | Completed | Permanent stream-level pixel sanitization & underlying text incinerator |
+| **2026-11-08** | **Phase 2** | 1-Click Background Removal (`remove-bg`) | Completed | Local color distance thresholding, feathered edges, transparent PNG export |
+| **2026-11-08** | **Phase 1** | Privacy Metadata Scrubber (`metadata-scrubber`) | Completed | Wipes PDF info dictionaries & strips image EXIF/GPS tags |
 | **2026-11-08** | **Phase 1** | e-Sign PDF & Signature Placement (`sign-pdf`) | Completed | Drawing pad, cursive generator, interactive overlay, permanent embed |
 | **2026-11-07** | **Planning** | Created `docs/features-plan-2026.md` | Completed | Roadmap initialization |
 
