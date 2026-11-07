@@ -31,6 +31,7 @@ const STATIC_ASSETS = [
     '/js/core/compressEngine.js',
     '/js/core/imageConverter.js',
     '/js/core/imageEditorEngine.js',
+    '/js/core/signEngine.js',
     
     // JavaScript - UI Controllers
     '/js/ui/imageToPdf.js',
@@ -48,6 +49,7 @@ const STATIC_ASSETS = [
     '/js/ui/organizePdfTool.js',
     '/js/ui/imageConverterTool.js',
     '/js/ui/imageEditorTool.js',
+    '/js/ui/signTool.js',
     '/js/ui/rotateImageTool.js',
     '/js/ui/watermarkTool.js',
     

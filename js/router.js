@@ -27,6 +27,7 @@ const Router = (function() {
         // Compression & Security
         'compress': { title: 'Compress', render: renderCompressTool },
         'lock': { title: 'Lock PDF', render: renderLockTool },
+        'sign-pdf': { title: 'Sign PDF', render: renderSignTool },
         'remove-pages': { title: 'Remove Pages', render: renderRemovePagesTool },
 
         // Conversion
@@ -210,6 +211,7 @@ const Router = (function() {
     function renderExtractTool() { showPage('tool'); if (typeof ExtractToolController !== 'undefined') ExtractToolController.render(); else showError('Extract Images tool not loaded'); }
     function renderOrganizePdf() { showPage('tool'); if (typeof OrganizePdfToolController !== 'undefined') OrganizePdfToolController.render(); else showError('Organize PDF tool not loaded'); }
     function renderLockTool() { showPage('tool'); if (typeof LockToolController !== 'undefined') LockToolController.render(); else showError('Lock tool not loaded'); }
+    function renderSignTool() { showPage('tool'); if (typeof SignToolController !== 'undefined') SignToolController.render(); else showError('Sign PDF tool not loaded'); }
     function renderRemovePagesTool() { showPage('tool'); if (typeof RemovePagesToolController !== 'undefined') RemovePagesToolController.render(); else showError('Remove Pages tool not loaded'); }
     function renderPdfToJpgTool() { showPage('tool'); if (typeof PdfToJpgController !== 'undefined') PdfToJpgController.render(); else showError('PDF to JPG tool not loaded'); }
     function renderImageConverter() { showPage('tool'); if (typeof ImageConverterToolController !== 'undefined') ImageConverterToolController.render(); else showError('Image Converter tool not loaded'); }

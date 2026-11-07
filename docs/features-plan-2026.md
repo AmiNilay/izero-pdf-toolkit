@@ -62,14 +62,14 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 - **Objective**: Allow users to draw, type, or upload transparent signatures, place and resize them visually on any PDF page, and stamp them permanently.
 - **Engine**: `js/core/signEngine.js` using `pdfDoc.embedPng()`.
 - **UI Controller**: `js/ui/signTool.js` with signature drawing canvas pad, cursive font generator, page carousel navigator, and draggable/resizable bounding box.
-- **Status**: [ ] Not Started
+- **Status**: [x] Completed (2026-11-08)
 - **Checklist**:
-  - [ ] Canvas signature drawing pad with pen width and smoothing.
-  - [ ] Type-to-signature generator with cursive typography presets.
-  - [ ] Signature image upload (transparent PNG/SVG).
-  - [ ] Interactive draggable/resizable placement overlay on rendered PDF page.
-  - [ ] Multi-page navigation (place signature on page N).
-  - [ ] Embed and export via `pdf-lib`.
+  - [x] Canvas signature drawing pad with pen width and smoothing.
+  - [x] Type-to-signature generator with cursive typography presets.
+  - [x] Signature image upload (transparent PNG/SVG).
+  - [x] Interactive draggable/resizable placement overlay on rendered PDF page.
+  - [x] Multi-page navigation (place signature on page N).
+  - [x] Embed and export via `pdf-lib`.
 
 ---
 
@@ -195,6 +195,7 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 
 | Date | Phase | Feature / Task | Status | Commit / Notes |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-11-08** | **Phase 1** | e-Sign PDF & Signature Placement (`sign-pdf`) | Completed | Drawing pad, cursive generator, interactive overlay, permanent embed |
 | **2026-11-07** | **Planning** | Created `docs/features-plan-2026.md` | Completed | Roadmap initialization |
 
 ---

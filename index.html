@@ -69,8 +69,8 @@
     <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- CRITICAL FIX: Using pdf-lib-with-encrypt for the Lock PDF tool -->
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js?v=99"></script>
+    <!-- pdf-lib-with-encrypt for Lock PDF and Sign PDF -->
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
@@ -399,6 +399,13 @@
                             <p>Remove unwanted pages from PDF</p>
                         </div>
                     </div>
+                    <div class="tool-card" data-tool="sign-pdf">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">draw</span>
+                            <h3>Sign PDF</h3>
+                            <p>Draw, type, or upload digital signature</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -466,6 +473,13 @@
                             <p>ID, Social Media & more</p>
                         </div>
                     </div>
+                    <div class="tool-card" data-tool="image-editor">
+                        <div class="tool-card-inner">
+                            <span class="tool-icon material-symbols-outlined">palette</span>
+                            <h3>Image Editor</h3>
+                            <p>Crop, round corners, rotate & watermark</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -528,6 +542,7 @@
     <script src="js/core/compressEngine.js"></script>
     <script src="js/core/imageConverter.js"></script>
     <script src="js/core/imageEditorEngine.js"></script>
+    <script src="js/core/signEngine.js"></script>
     
     <!-- UI Controllers -->
     <script src="js/ui/imageToPdf.js"></script>
@@ -541,10 +556,11 @@
     <script src="js/ui/compressTool.js"></script>
     <script src="js/ui/lockTool.js"></script>
     <script src="js/ui/removePagesTool.js"></script>
-    <script src="js/ui/pdfToJpgTool.js?v=2"></script>
+    <script src="js/ui/pdfToJpgTool.js"></script>
     <script src="js/ui/organizePdfTool.js"></script>
     <script src="js/ui/imageConverterTool.js"></script>
     <script src="js/ui/imageEditorTool.js"></script>
+    <script src="js/ui/signTool.js"></script>
     
     <!-- New Tools -->
     <script src="js/ui/rotateImageTool.js"></script>
