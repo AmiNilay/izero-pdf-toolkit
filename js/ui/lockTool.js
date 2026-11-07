@@ -271,7 +271,7 @@ const LockToolController = (function() {
             // This now uses the forked pdf-lib-with-encrypt library
             var { PDFDocument } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
-            var pdf = await PDFDocument.load(arrayBuffer);
+            var pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             
             var encryptionLevel = parseInt(document.getElementById('encryptionLevel').value);
             

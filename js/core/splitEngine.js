@@ -11,7 +11,7 @@ const SplitEngine = (function() {
     async function splitByRanges(pdfFile, ranges) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         const results = [];
@@ -64,7 +64,7 @@ const SplitEngine = (function() {
     async function splitByPageCount(pdfFile, pagesPerFile) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         const results = [];
@@ -105,7 +105,7 @@ const SplitEngine = (function() {
     async function extractPages(pdfFile, pageNumbers) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         // Validate page numbers
@@ -131,7 +131,9 @@ const SplitEngine = (function() {
             results.push({
                 blob: new Blob([pdfBytes], { type: 'application/pdf' }),
                 filename: filename,
-                page: pageNum + 1
+                page: pageNum + 1,
+                pageCount: 1,
+                pages: [pageNum + 1]
             });
             
             const progress = (i + 1) / validPages.length * 100;
@@ -148,7 +150,7 @@ const SplitEngine = (function() {
     async function splitAtPages(pdfFile, splitPoints) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         // Sort and validate split points
@@ -208,7 +210,7 @@ const SplitEngine = (function() {
     async function deletePages(pdfFile, pagesToDelete) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         const deleteSet = new Set(pagesToDelete.map(p => p - 1));
@@ -239,7 +241,7 @@ const SplitEngine = (function() {
     async function reversePages(pdfFile) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const totalPages = pdf.getPageCount();
         
         const newPdf = await PDFDocument.create();

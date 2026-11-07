@@ -20,7 +20,8 @@ const MergeEngine = (function() {
         const { PDFDocument } = window.PDFLib;
         const mergedPdf = await PDFDocument.create();
         
-        // If pageSize specified, set it
+        // If pageSize specified, calculate target dimensions
+        let targetSize = null;
         if (pageSize) {
             // Convert page size to points (1 point = 1/72 inch)
             const sizes = {
@@ -30,8 +31,7 @@ const MergeEngine = (function() {
                 'a3': [841.89, 1190.55],
                 'a5': [419.53, 595.28]
             };
-            const size = sizes[pageSize] || sizes['a4'];
-            mergedPdf.setPageSize(size[0], size[1]);
+            targetSize = sizes[pageSize] || sizes['a4'];
         }
 
         let totalPages = 0;
@@ -40,7 +40,7 @@ const MergeEngine = (function() {
         // First, count total pages
         for (const file of pdfFiles) {
             const arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
-            const pdf = await PDFDocument.load(arrayBuffer);
+            const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             totalPages += pdf.getPageCount();
         }
 
@@ -48,11 +48,14 @@ const MergeEngine = (function() {
         for (let i = 0; i < pdfFiles.length; i++) {
             const file = pdfFiles[i];
             const arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
-            const pdf = await PDFDocument.load(arrayBuffer);
+            const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
             
             for (const page of pages) {
                 pageCounter++;
+                if (targetSize) {
+                    page.setSize(targetSize[0], targetSize[1]);
+                }
                 mergedPdf.addPage(page);
                 
                 // Add page numbers if requested
@@ -123,7 +126,7 @@ const MergeEngine = (function() {
         // Calculate total pages first
         for (const item of pdfFilesWithRanges) {
             const arrayBuffer = await FileHelpers.readAsArrayBuffer(item.file);
-            const pdf = await PDFDocument.load(arrayBuffer);
+            const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             const pageIndices = item.pages || pdf.getPageIndices();
             totalPages += pageIndices.length;
         }
@@ -133,7 +136,7 @@ const MergeEngine = (function() {
         for (let i = 0; i < pdfFilesWithRanges.length; i++) {
             const { file, pages: pageIndices } = pdfFilesWithRanges[i];
             const arrayBuffer = await FileHelpers.readAsArrayBuffer(file);
-            const pdf = await PDFDocument.load(arrayBuffer);
+            const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             
             const indices = pageIndices || pdf.getPageIndices();
             const pages = await mergedPdf.copyPages(pdf, indices);
@@ -157,7 +160,7 @@ const MergeEngine = (function() {
     async function reorderPages(pdfFile, newOrder) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const newPdf = await PDFDocument.create();
         
         const pages = await newPdf.copyPages(pdf, newOrder);
@@ -174,7 +177,7 @@ const MergeEngine = (function() {
     async function insertBlankPages(pdfFile, positions, pageSize = null) {
         const { PDFDocument } = window.PDFLib;
         const arrayBuffer = await FileHelpers.readAsArrayBuffer(pdfFile);
-        const pdf = await PDFDocument.load(arrayBuffer);
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
         const newPdf = await PDFDocument.create();
         
         const totalPages = pdf.getPageCount();

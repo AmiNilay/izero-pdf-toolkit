@@ -1,28 +1,58 @@
 ﻿# Dependencies
 node_modules/
+jspm_packages/
+web_modules/
 
-# OS files
+# OS Generated Files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# IDE files
-.vscode/
+# IDE & Editor Configurations
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 .idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 *.swp
 *.swo
+*~
 
-# Logs
+# Logs & Diagnostics
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Environment
+# Environment & Secrets
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
 
-# Build
+# Build & Output Folders
 dist/
 build/
+out/
+.vercel/
 
-# Temporary files
+# Temporary Files & Caches
 *.tmp
 *.temp
+.cache/
+.parcel-cache/
+.eslintcache
+*.bak

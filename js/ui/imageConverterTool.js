@@ -216,7 +216,7 @@ const ImageConverterToolController = (function() {
             html += `
                 <div class="file-item">
                     <span class="material-symbols-outlined">image</span>
-                    <span class="file-name">${file.name}</span>
+                    <span class="file-name">${FileHelpers.escapeHtml(file.name)}</span>
                     <span class="file-size">${FileHelpers.formatFileSize(file.size)}</span>
                     <span class="file-format">${formatLabel}</span>
                     <button class="remove-file-btn" data-index="${i}">

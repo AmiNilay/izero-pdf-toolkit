@@ -275,48 +275,24 @@ const RotateToolController = (function() {
             var canvas = document.getElementById('page-canvas-' + pageNum);
             if (!canvas) return;
             
-            var rotation = pageRotations[pageNum] || 0;
+            var addedRotation = pageRotations[pageNum] || 0;
+            var currentAngle = page.rotate || 0;
+            var finalAngle = (currentAngle + addedRotation) % 360;
+            
             var ctx = canvas.getContext('2d');
+            var viewport = page.getViewport({ scale: 0.5, rotation: finalAngle });
             
-            // Get viewport with original rotation
-            var viewport = page.getViewport({ scale: 0.5 });
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
             
-            // Adjust canvas size based on rotation
-            if (rotation === 90 || rotation === 270) {
-                canvas.width = viewport.height;
-                canvas.height = viewport.width;
-            } else {
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-            }
-            
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            // Save context and apply rotation
-            ctx.save();
-            
-            // Translate to center
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            
-            // Rotate
-            ctx.rotate(rotation * Math.PI / 180);
-            
-            // Translate back
-            ctx.translate(-canvas.width / 2, -canvas.height / 2);
-            
-            // Render page
-            var renderViewport = page.getViewport({ scale: 0.5 });
             var renderContext = {
                 canvasContext: ctx,
-                viewport: renderViewport
+                viewport: viewport
             };
             
             await page.render(renderContext).promise;
-            
-            ctx.restore();
-            
-            // Clean up
             page.cleanup();
             
         } catch (error) {
@@ -366,19 +342,18 @@ const RotateToolController = (function() {
             // Load PDF
             var { PDFDocument, degrees } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
-            var pdf = await PDFDocument.load(arrayBuffer);
+            var pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             var newPdf = await PDFDocument.create();
             
             var total = pdf.getPageCount();
             
             for (var i = 0; i < total; i++) {
                 var [page] = await newPdf.copyPages(pdf, [i]);
-                var rotation = pageRotations[i + 1] || 0;
+                var addedRotation = pageRotations[i + 1] || 0;
+                var currentAngle = page.getRotation().angle || 0;
+                var finalAngle = (currentAngle + addedRotation) % 360;
                 
-                if (rotation > 0) {
-                    page.setRotation(degrees(rotation));
-                }
-                
+                page.setRotation(degrees(finalAngle));
                 newPdf.addPage(page);
                 
                 var progress = (i + 1) / total * 100;

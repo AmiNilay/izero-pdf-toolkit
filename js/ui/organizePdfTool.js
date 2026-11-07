@@ -332,6 +332,11 @@ const OrganizePdfToolController = (function() {
             return;
         }
 
+        if (pageOrder.length === 0) {
+            showToast('error', 'Cannot create a PDF with 0 pages. Please keep at least one page.');
+            return;
+        }
+
         var applyBtn = document.getElementById('organizeApplyBtn');
         applyBtn.disabled = true;
         applyBtn.textContent = 'Processing...';
@@ -339,7 +344,7 @@ const OrganizePdfToolController = (function() {
         try {
             var { PDFDocument } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
-            var pdf = await PDFDocument.load(arrayBuffer);
+            var pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             var newPdf = await PDFDocument.create();
 
             for (var i = 0; i < pageOrder.length; i++) {

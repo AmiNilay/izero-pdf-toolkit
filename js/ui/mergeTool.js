@@ -151,7 +151,7 @@ const MergeToolController = (function() {
             html += `
                 <div class="file-item">
                     <span class="material-symbols-outlined">description</span>
-                    <span class="file-name">${pdf.name}</span>
+                    <span class="file-name">${FileHelpers.escapeHtml(pdf.name)}</span>
                     <span class="file-size">${FileHelpers.formatFileSize(pdf.size)}</span>
                     <button class="remove-file-btn" data-index="${i}">
                         <span class="material-symbols-outlined">close</span>

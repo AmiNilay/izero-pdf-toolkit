@@ -109,14 +109,17 @@ const PDFProcessor = (function() {
             const operatorList = await page.getOperatorList();
             
             // Find image data in operator list
-            const imageData = await extractImageDataFromPage(page, operatorList);
+            const imageData = await extractImageDataFromPage(page, operatorList, format);
             
             for (const data of imageData) {
                 if (data.size >= minSize) {
                     images.push({
-                        data,
+                        blob: data.blob,
+                        width: data.width,
+                        height: data.height,
+                        size: data.size,
                         page: i,
-                        format: data.format || 'unknown'
+                        format: data.format || format || 'image/png'
                     });
                 }
             }
@@ -132,7 +135,7 @@ const PDFProcessor = (function() {
     /**
      * Extract image data from page (helper)
      */
-    async function extractImageDataFromPage(page, operatorList) {
+    async function extractImageDataFromPage(page, operatorList, format = 'image/png') {
         const images = [];
         const args = operatorList.argsArray;
         const fnArray = operatorList.fnArray;
@@ -141,30 +144,67 @@ const PDFProcessor = (function() {
             if (fnArray[i] === pdfjsLib.OPS.paintImageXObject) {
                 const name = args[i][0];
                 try {
-                    const image = await page.objs.get(name);
+                    let image = null;
+                    if (typeof page.objs.get === 'function') {
+                        image = await new Promise(resolve => {
+                            try {
+                                const res = page.objs.get(name, resolve);
+                                if (res && typeof res.then === 'function') {
+                                    res.then(resolve).catch(() => resolve(null));
+                                } else if (res) {
+                                    resolve(res);
+                                }
+                            } catch {
+                                resolve(null);
+                            }
+                        });
+                    }
+
                     if (image && image.data) {
-                        // Try to get image as blob
                         const canvas = document.createElement('canvas');
-                        canvas.width = image.width || 100;
-                        canvas.height = image.height || 100;
+                        const width = image.width || 100;
+                        const height = image.height || 100;
+                        canvas.width = width;
+                        canvas.height = height;
                         const ctx = canvas.getContext('2d');
                         
-                        if (image.data instanceof Uint8Array) {
-                            // Create ImageData from the raw data
-                            const imageData = new ImageData(
-                                new Uint8ClampedArray(image.data),
-                                image.width || 100,
-                                image.height || 100
-                            );
+                        if (image.data instanceof Uint8Array || image.data instanceof Uint8ClampedArray) {
+                            const totalPixels = width * height;
+                            let rgbaData;
+                            
+                            if (image.data.length === totalPixels * 4) {
+                                rgbaData = new Uint8ClampedArray(image.data.buffer || image.data);
+                            } else if (image.data.length === totalPixels * 3) {
+                                rgbaData = new Uint8ClampedArray(totalPixels * 4);
+                                for (let p = 0, q = 0; p < image.data.length; p += 3, q += 4) {
+                                    rgbaData[q] = image.data[p];
+                                    rgbaData[q + 1] = image.data[p + 1];
+                                    rgbaData[q + 2] = image.data[p + 2];
+                                    rgbaData[q + 3] = 255;
+                                }
+                            } else if (image.data.length === totalPixels) {
+                                rgbaData = new Uint8ClampedArray(totalPixels * 4);
+                                for (let p = 0, q = 0; p < image.data.length; p++, q += 4) {
+                                    const val = image.data[p];
+                                    rgbaData[q] = val;
+                                    rgbaData[q + 1] = val;
+                                    rgbaData[q + 2] = val;
+                                    rgbaData[q + 3] = 255;
+                                }
+                            } else {
+                                continue;
+                            }
+
+                            const imageData = new ImageData(rgbaData, width, height);
                             ctx.putImageData(imageData, 0, 0);
                             
-                            const blob = await FileHelpers.canvasToBlob(canvas);
+                            const blob = await FileHelpers.canvasToBlob(canvas, format);
                             images.push({
                                 blob,
-                                width: image.width,
-                                height: image.height,
+                                width: width,
+                                height: height,
                                 size: blob.size,
-                                format: blob.type
+                                format: blob.type || format
                             });
                         }
                     }

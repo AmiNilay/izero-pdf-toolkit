@@ -299,7 +299,7 @@ const RemovePagesToolController = (function() {
         try {
             var { PDFDocument } = window.PDFLib;
             var arrayBuffer = await FileHelpers.readAsArrayBuffer(currentFile);
-            var pdf = await PDFDocument.load(arrayBuffer);
+            var pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             var newPdf = await PDFDocument.create();
 
             var pagesToKeep = [];

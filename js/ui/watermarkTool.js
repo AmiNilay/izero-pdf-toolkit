@@ -201,9 +201,10 @@ const WatermarkToolController = (function() {
         ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(-Math.PI / 6);
         
-        const spacing = parseInt(size) * 4;
-        for (let x = -canvas.width; x < canvas.width; x += spacing) {
-            for (let y = -canvas.height; y < canvas.height; y += spacing) {
+        const spacing = Math.max(40, (parseInt(size) || 60) * 4);
+        const diagonal = Math.sqrt(canvas.width * canvas.width + canvas.height * canvas.height);
+        for (let x = -diagonal; x < diagonal; x += spacing) {
+            for (let y = -diagonal; y < diagonal; y += spacing) {
                 ctx.fillText(text, x, y);
             }
         }

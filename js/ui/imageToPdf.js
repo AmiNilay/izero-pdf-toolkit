@@ -185,7 +185,7 @@ const ImageToPdfController = (function() {
             html += `
                 <div class="file-item">
                     <span class="material-symbols-outlined">image</span>
-                    <span class="file-name">${img.name}</span>
+                    <span class="file-name">${FileHelpers.escapeHtml(img.name)}</span>
                     <span class="file-size">${FileHelpers.formatFileSize(img.size)}</span>
                     <button class="remove-file-btn" data-index="${i}">
                         <span class="material-symbols-outlined">close</span>

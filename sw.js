@@ -29,9 +29,10 @@ const STATIC_ASSETS = [
     '/js/core/mergeEngine.js',
     '/js/core/splitEngine.js',
     '/js/core/compressEngine.js',
+    '/js/core/imageConverter.js',
+    '/js/core/imageEditorEngine.js',
     
-    // JavaScript - UI Controllers - Core
-    '/js/ui/pdfToImage.js',
+    // JavaScript - UI Controllers
     '/js/ui/imageToPdf.js',
     '/js/ui/cropTool.js',
     '/js/ui/resizeTool.js',
@@ -40,17 +41,21 @@ const STATIC_ASSETS = [
     '/js/ui/splitTool.js',
     '/js/ui/rotateTool.js',
     '/js/ui/extractTool.js',
-    
-    // JavaScript - UI Controllers - New Features
     '/js/ui/compressTool.js',
     '/js/ui/lockTool.js',
     '/js/ui/removePagesTool.js',
     '/js/ui/pdfToJpgTool.js',
+    '/js/ui/organizePdfTool.js',
+    '/js/ui/imageConverterTool.js',
+    '/js/ui/imageEditorTool.js',
+    '/js/ui/rotateImageTool.js',
+    '/js/ui/watermarkTool.js',
     
     // Libraries (CDN versions cached)
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js',
+    'https://cdn.jsdelivr.net/npm/pdf-lib-with-encrypt@1.2.1/dist/pdf-lib.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'
 ];
@@ -88,13 +93,15 @@ self.addEventListener('fetch', event => {
     // Skip cross-origin requests except CDN libraries
     if (url.origin !== self.location.origin && 
         !url.href.includes('cdnjs.cloudflare.com') &&
+        !url.href.includes('cdn.jsdelivr.net') &&
         !url.href.includes('fonts.googleapis.com') &&
         !url.href.includes('fonts.gstatic.com')) {
         return event.respondWith(fetch(event.request));
     }
     
     // For HTML pages - Network first with cache fallback
-    if (event.request.headers.get('accept').includes('text/html')) {
+    const acceptHeader = event.request.headers.get('accept') || '';
+    if (acceptHeader.includes('text/html')) {
         event.respondWith(
             fetch(event.request)
                 .then(response => {

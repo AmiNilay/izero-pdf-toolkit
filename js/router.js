@@ -38,11 +38,11 @@ const Router = (function() {
     };
 
     const pageRoutes = {
-        'privacy': '/privacy.html',
-        'open-source': '/open-source.html',
-        'github': '/github.html',
-        'license': '/license.html',
-        'support': '/support.html'
+        'privacy': 'privacy.html',
+        'open-source': 'open-source.html',
+        'github': 'github.html',
+        'license': 'license.html',
+        'support': 'support.html'
     };
 
     let currentRoute = 'home';
@@ -105,7 +105,8 @@ const Router = (function() {
 
         currentRoute = tool;
 
-        var url = tool === 'home' ? '/' : '/?tool=' + tool;
+        var pathname = window.location.pathname;
+        var url = tool === 'home' ? pathname : pathname + '?tool=' + tool;
         try {
             if (replaceState) {
                 history.replaceState({ tool: tool }, '', url);

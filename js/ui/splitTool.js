@@ -271,7 +271,7 @@ const SplitToolController = (function() {
                         <canvas id="preview-canvas-${i}" style="max-width: 100%; max-height: 100%; display: block;"></canvas>
                         <div id="preview-fallback-${i}" style="font-size:48px; display: none;">📄</div>
                     </div>
-                    <div style="font-size:14px; font-weight: 500; color: var(--md-sys-color-on-surface, #1f2937); text-align: center; margin-bottom: 4px; word-break: break-all; max-width: 100%;">${result.filename}</div>
+                    <div style="font-size:14px; font-weight: 500; color: var(--md-sys-color-on-surface, #1f2937); text-align: center; margin-bottom: 4px; word-break: break-all; max-width: 100%;">${FileHelpers.escapeHtml(result.filename)}</div>
                     <div style="font-size:12px; color: var(--md-sys-color-on-surface-variant, #6b7280); margin-bottom: 12px;">${result.pageCount || (result.pages ? result.pages.length : 0)} pages</div>
                     <div style="display: flex; gap: 8px; width: 100%;">
                         <button class="btn btn-secondary preview-view-btn" data-index="${i}" style="flex: 1; padding: 8px; font-size: 13px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 4px;">
@@ -321,7 +321,7 @@ const SplitToolController = (function() {
             
             modal.innerHTML = `
                 <div style="width: 100%; max-width: 800px; display: flex; justify-content: space-between; align-items: center; color: white; margin-bottom: 20px; padding: 0 10px;">
-                    <h3 style="margin: 0; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;">${filename}</h3>
+                    <h3 style="margin: 0; font-size: 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;">${FileHelpers.escapeHtml(filename)}</h3>
                     <button id="close-preview-modal" style="padding: 8px 16px; background: #fff; color: #000; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Close</button>
                 </div>
                 <div id="modal-pdf-pages" style="display: flex; flex-direction: column; align-items: center; gap: 20px; width: 100%; max-width: 800px;"></div>

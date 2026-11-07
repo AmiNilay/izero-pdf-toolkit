@@ -8,9 +8,6 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="google5b988d9348ce5c94.html" />
     
-    <!-- Base tag -->
-    <base href="/">
-    
     <!-- SEO Meta Tags -->
     <meta name="description" content="iZeroPDF - Free 100% offline PDF & Image Toolkit. Merge, split, compress, convert PDFs and images. All processing in your browser. No uploads, completely private.">
     <meta name="keywords" content="PDF toolkit, offline PDF, merge PDF, split PDF, compress PDF, PDF to image, image to PDF, free PDF tools, browser-based PDF, privacy first">
@@ -34,7 +31,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon_io/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/favicon_io/apple-touch-icon.png">
-    <link rel="manifest" href="assets/icons/favicon_io/site.webmanifest">
     <link rel="shortcut icon" href="assets/icons/favicon_io/favicon.ico">
     
     <!-- PWA Meta Tags -->
@@ -64,8 +60,10 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/theme-light.css" id="themeStyles">
     
-    <!-- Icon Libraries -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Icon Libraries & Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
     <!-- Libraries -->
@@ -230,12 +228,16 @@
             <!-- ============================================
                  POPULAR TOOLS
             ============================================ -->
-            <div class="section-header" id="popular-tools">
-                <h2>Popular Tools</h2>
-                <p>Most used tools by our community</p>
-            </div>
-            
-            <div class="tools-grid popular-grid">
+            <div class="category-section" id="popular-section">
+                <div class="category-header" id="popular-tools">
+                    <span class="category-index">01 / FEATURED</span>
+                    <div class="category-title">
+                        <h2>Popular Tools</h2>
+                    </div>
+                    <p>Most used tools by our community</p>
+                </div>
+                
+                <div class="tools-grid popular-grid">
                 <div class="tool-card popular" data-tool="merge">
                     <div class="tool-card-inner">
                         <span class="tool-badge">★ Popular</span>
@@ -318,12 +320,14 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- ============================================
                  PDF TOOLS SECTION
             ============================================ -->
             <div class="category-section" id="pdf-tools">
                 <div class="category-header">
+                    <span class="category-index">02 / PDF</span>
                     <div class="category-title">
                         <span class="category-icon material-symbols-outlined">picture_as_pdf</span>
                         <h2>PDF Tools</h2>
@@ -403,6 +407,7 @@
             ============================================ -->
             <div class="category-section" id="image-tools">
                 <div class="category-header">
+                    <span class="category-index">03 / IMAGE</span>
                     <div class="category-title">
                         <span class="category-icon material-symbols-outlined">image</span>
                         <h2>Image Tools</h2>

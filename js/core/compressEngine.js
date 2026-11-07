@@ -176,7 +176,7 @@ const CompressEngine = (function() {
         }
 
         const { PDFDocument } = window.PDFLib;
-        const pdf = await PDFDocument.load(originalArrayBuffer);
+        const pdf = await PDFDocument.load(originalArrayBuffer, { ignoreEncryption: true });
         
         let compressionOptions = {};
         switch(strategy) {
@@ -195,6 +195,19 @@ const CompressEngine = (function() {
 
         const pdfBytes = await pdf.save(compressionOptions);
         const compressedSize = pdfBytes.byteLength;
+
+        // If saving did not reduce the file size, retain the original to avoid ballooning
+        if (compressedSize >= originalSize) {
+            return {
+                pdfBlob: new Blob([originalArrayBuffer], { type: 'application/pdf' }),
+                originalSize,
+                compressedSize: originalSize,
+                reduction: 0,
+                strategy,
+                note: 'Document is already fully optimized.'
+            };
+        }
+
         const reduction = ((originalSize - compressedSize) / originalSize * 100).toFixed(1);
 
         return {
@@ -396,7 +409,7 @@ const CompressEngine = (function() {
         const originalSize = arrayBuffer.byteLength;
         try {
             const { PDFDocument } = window.PDFLib;
-            const pdf = await PDFDocument.load(arrayBuffer);
+            const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
             const totalPages = pdf.getPageCount();
             return {
                 originalSize, originalSizeFormatted: FileHelpers.formatFileSize(originalSize),

@@ -47,9 +47,16 @@ const FileHelpers = (function() {
     function loadImage(file) {
         return new Promise((resolve, reject) => {
             const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = URL.createObjectURL(file);
+            const objectUrl = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                resolve(img);
+            };
+            img.onerror = (err) => {
+                URL.revokeObjectURL(objectUrl);
+                reject(err);
+            };
+            img.src = objectUrl;
         });
     }
 
@@ -176,8 +183,22 @@ const FileHelpers = (function() {
         });
     }
 
+    /**
+     * Escape HTML string to prevent XSS
+     */
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     // Public API
     return {
+        escapeHtml,
         readAsArrayBuffer,
         readAsDataURL,
         readAsText,

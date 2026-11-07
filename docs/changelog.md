@@ -2,6 +2,41 @@
 
 All notable changes to the Offline PDF Toolkit will be documented in this file.
 
+## [2.1.0] - 2026-11-07
+
+### Design System & Visual Style
+- **Swiss Minimalist Transformation**: Full migration from Material You to the Swiss Minimalist design system:
+  - **Color Palette & Surfaces**: High-contrast white ground (`#ffffff`), black ink (`#000000`), pale grey surface (`#f0f0f0`), and punchy red accent signals (`#c90000`). Removed all floating card shadows, blur backdrop filters, gradients, and pastel surfaces.
+  - **Authoritative Geometry**: Enforced 0 radius (`--dp-radius-control: 0`) across all controls, buttons, cards, modals, and workspaces, alongside continuous visible 2px dividing rules (`--dp-border-rule: 2px`).
+  - **Continuous Typographic Grid**: Adopted a 12-column desktop layout featuring a 9-column opening statement in the hero and a persistent 3-column index rail (`01 / FEATURED`, `02 / PDF`, `03 / IMAGE`) with tool matrixes aligning to the 4th column.
+  - **Typography Scale**: Bound Host Grotesk (`"SwissMinimalistHost", "Host Grotesk", Arial, sans-serif`) with heavy display headings (scale up to 110px, line-height 0.92, tight letter tracking) and tracked uppercase labels/metadata.
+  - **Ruled Matrix Cards**: Converted floating tool cards into a continuous ruled matrix with direct black-and-white state inversions and red featured markers.
+  - **Immediate Visual Feedback**: Set `--dp-motion-feedback: 0s` removing ornamental float/pulse animations for immediate tactile responsiveness and reduced-motion compliance.
+  - **Full Dark Mode Parity**: Synchronized Swiss Minimalist tokens in `css/theme-dark.css` with dark ground (`#0a0a0a`), white ink (`#ffffff`), dark surface (`#141414`), and vibrant red signals (`#e50000`).
+
+---
+
+## [2.0.1] - 2024-05-21
+
+### Security
+- **DOM-Based XSS Remediation**: Sanitized user file name interpolation in `mergeTool`, `imageToPdf`, `imageConverterTool`, and `splitTool` using a new `FileHelpers.escapeHtml()` utility.
+
+### Fixed
+- **Vercel Routing**: Added explicit routing overrides for `/sw.js` and root `.html` files in `vercel.json` to prevent rewrite collisions with the single-page application wildcard.
+- **Service Worker Installation**: Corrected 404 cache failure caused by missing `pdfToImage.js`, registered all missing tools and engines, and added `cdn.jsdelivr.net` to allowed fetch origins.
+- **Merge Engine Crash**: Replaced invalid `mergedPdf.setPageSize()` call with per-page `page.setSize()` adjustments.
+- **Extract Images**: Fixed data structure nesting mismatch so image previews and ZIP downloads work, and added conversion for RGB and Grayscale buffers into 4-channel RGBA before creating `ImageData`.
+- **Encrypted/Restricted PDF Support**: Added `{ ignoreEncryption: true }` across all PDF tools to allow handling of owner-restricted documents.
+- **Rotate PDF Logic**: Replaced absolute angle overrides with relative angle accumulation and switched previews to PDF.js native rotation.
+- **Subdirectory Portability**: Removed hardcoded `<base href="/">` in `index.html` and updated router logic to allow deployment on subpaths and GitHub Pages.
+- **Photo Resizer Aspect Ratio**: Connected the aspect ratio checkbox dynamically instead of hardcoding `false`.
+- **Organize PDF**: Added safeguard against saving empty documents (0 pages).
+- **Watermark Tool**: Expanded repeating pattern bounds to canvas diagonal to prevent corner clipping and protected against infinite loops on 0-spacing.
+- **Syntax Cleanup**: Removed stray `clear` command in `pdfToJpgTool.js`.
+- **Memory Management**: Revoked temporary object URLs in `FileHelpers.loadImage()`.
+
+---
+
 ## [2.0.0] - 2024-05-20
 
 ### Added

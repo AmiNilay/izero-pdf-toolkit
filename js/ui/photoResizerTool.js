@@ -487,7 +487,9 @@ const PhotoResizerToolController = (function() {
 
         var preview = document.getElementById('resizerResizedPreview');
         if (preview) {
-            var canvas = CanvasHelpers.resizeImage(currentImage, width, height, false);
+            var maintainAspectEl = document.getElementById('maintainAspectResizer');
+            var maintainAspect = maintainAspectEl ? maintainAspectEl.checked : true;
+            var canvas = CanvasHelpers.resizeImage(currentImage, width, height, maintainAspect);
             var format = document.getElementById('resizerFormat').value;
             var quality = parseInt(document.getElementById('resizerQuality').value) / 100;
             var dataURL = canvas.toDataURL(format, quality);
@@ -513,7 +515,9 @@ const PhotoResizerToolController = (function() {
         }
 
         try {
-            resizedCanvas = CanvasHelpers.resizeImage(currentImage, width, height, false);
+            var maintainAspectEl = document.getElementById('maintainAspectResizer');
+            var maintainAspect = maintainAspectEl ? maintainAspectEl.checked : true;
+            resizedCanvas = CanvasHelpers.resizeImage(currentImage, width, height, maintainAspect);
             
             var preview = document.getElementById('resizerResizedPreview');
             if (preview) {

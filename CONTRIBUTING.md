@@ -5,7 +5,7 @@ Thank you for considering contributing to iZeroPDF! We welcome contributions fro
 ## How to Contribute
 
 ### 1. Report Bugs
-- Use the [GitHub Issues](https://github.com/AmiNilay/iZeroPDF/issues) page
+- Use the [GitHub Issues](https://github.com/AmiNilay/izero-pdf-toolkit/issues) page
 - Check if the bug has already been reported
 - Include clear steps to reproduce the bug
 - Include browser name and version

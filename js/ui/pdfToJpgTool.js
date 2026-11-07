@@ -373,4 +373,4 @@ const PdfToJpgController = (function() {
     };
 })();
 
-window.PdfToJpgController = PdfToJpgController;clear
+window.PdfToJpgController = PdfToJpgController;

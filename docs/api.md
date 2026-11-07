@@ -77,6 +77,7 @@ PDF and image compression.
 File operations.
 
 **Methods:**
+- `escapeHtml(str)` - Escape HTML characters to prevent XSS
 - `readAsArrayBuffer(file)` - Read as ArrayBuffer
 - `readAsDataURL(file)` - Read as DataURL
 - `loadImage(file)` - Load image from file

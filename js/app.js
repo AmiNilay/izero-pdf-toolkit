@@ -44,7 +44,10 @@
 
     function showCacheDialog() {
         const dialog = document.getElementById('cacheConsentDialog');
-        if (!dialog) return;
+        if (!dialog) {
+            initializeApp(false);
+            return;
+        }
         
         // Show dialog
         dialog.style.display = 'flex';
