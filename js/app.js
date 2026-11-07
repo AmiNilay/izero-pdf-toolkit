@@ -242,7 +242,12 @@
         'ocr-pdf': '2026-11-08',
         'redact-pdf': '2026-11-08',
         'remove-bg': '2026-11-08',
-        'image-editor': '2026-11-08'
+        'image-editor': '2026-11-08',
+        'grayscale-pdf': '2026-11-08',
+        'flatten-pdf': '2026-11-08',
+        'pdf-to-docx': '2026-11-08',
+        'nup-pdf': '2026-11-08',
+        'compare-pdf': '2026-11-08'
     };
 
     function initNewFeatureBadges() {

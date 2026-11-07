@@ -59,6 +59,11 @@ iZeroPDF incorporates an editorial Swiss typography grid:
 | **Metadata Scrubber** | Inspect document info dictionaries, sanitize author/creator data, and strip EXIF/GPS tags. |
 | **Client-Side OCR** | Extract text from scanned PDFs and documents using client-side Tesseract.js Wasm. |
 | **Irreversible Redaction** | Burn blackout boxes and permanently incinerate underlying text streams and glyphs. |
+| **Grayscale PDF** | B&W and grayscale print optimizer saving up to 70% file size and preventing toner waste. |
+| **Flatten Forms** | Permanently freeze interactive AcroForms, fields, and annotations into immutable static vectors. |
+| **PDF to Word (.docx)** | Reconstruct PDF pages into editable Microsoft Word documents using client-side OpenXML. |
+| **N-Up Imposition** | Combine 2, 4, 6, or 8 pages onto a single sheet of paper for printing and booklets. |
+| **Compare PDF** | Visual side-by-side contract & drawing difference map with green addition and red deletion highlights. |
 
 ### 🖼️ Image Utilities
 

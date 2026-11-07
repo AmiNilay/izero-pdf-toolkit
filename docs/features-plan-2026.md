@@ -92,13 +92,13 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 - **Engine**: `js/core/grayscaleEngine.js` using luminosity formula:
   $$\text{Gray} = 0.299R + 0.587G + 0.114B$$
 - **UI Controller**: `js/ui/grayscaleTool.js`.
-- **Status**: [ ] Not Started
+- **Status**: [x] Completed (2026-11-08)
 - **Checklist**:
-  - [ ] Multi-page rendering through OffscreenCanvas.
-  - [ ] Grayscale mode (256 shades of gray).
-  - [ ] Pure B&W threshold mode with adjustable contrast slider.
-  - [ ] Reassembly into PDF using `jsPDF` / `pdf-lib`.
-  - [ ] Before/After file size comparison.
+  - [x] Multi-page rendering through Canvas.
+  - [x] Grayscale mode (256 shades of gray).
+  - [x] Pure B&W threshold mode with adjustable contrast slider.
+  - [x] Reassembly into PDF using `pdf-lib`.
+  - [x] Before/After file size comparison.
 
 ---
 
@@ -106,12 +106,12 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 - **Objective**: Freeze interactive AcroForms, form fields, checkboxes, and annotations into immutable document vectors (required for visa, court, and tax filings).
 - **Engine**: `js/core/flattenEngine.js` via `pdfDoc.getForm().flatten()`.
 - **UI Controller**: `js/ui/flattenTool.js`.
-- **Status**: [ ] Not Started
+- **Status**: [x] Completed (2026-11-08)
 - **Checklist**:
-  - [ ] Detect if uploaded PDF has interactive forms or annotations.
-  - [ ] Execute `pdfDoc.getForm().flatten()`.
-  - [ ] Flatten annotation layers and comments.
-  - [ ] Instant export of immutable static PDF.
+  - [x] Detect if uploaded PDF has interactive forms or annotations.
+  - [x] Execute `pdfDoc.getForm().flatten()`.
+  - [x] Flatten annotation layers and comments.
+  - [x] Instant export of immutable static PDF.
 
 ---
 
@@ -148,25 +148,28 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 ## 🔄 Phase 3: Conversions & Imposition Utilities
 
 ### 3.1 📄 PDF to Editable Word (.docx) (`pdf-to-docx`)
-- **Engine**: `docx.js` + client-side text run positioning.
+- **Engine**: `js/core/docxEngine.js` using client-side OpenXML builder & `JSZip`.
+- **UI Controller**: `js/ui/pdfToDocxTool.js` with paragraph structure analysis & live progress rail.
 - **Capabilities**:
-  - Extract text blocks, font sizes, alignments, and embedded images.
-  - Generate `.docx` files natively in the browser without LibreOffice or remote servers.
-- **Status**: [ ] Planned
+  - Extract text blocks, font sizes, alignments, line feeds, and titles.
+  - Generates `.docx` files natively in the browser without LibreOffice or remote servers.
+- **Status**: [x] Completed (2026-11-08)
 
 ### 3.2 📑 N-Up Multi-Page Imposition (`nup-pdf`)
-- **Engine**: `pdf-lib` custom transformation matrix.
+- **Engine**: `js/core/nupEngine.js` via `pdf-lib` embedding and scale transformation matrices.
+- **UI Controller**: `js/ui/nupTool.js` with 2-Up, 4-Up, 6-Up, 8-Up layouts, paper sizes (A4, Letter, Legal), and orientation.
 - **Capabilities**:
-  - Place 2, 4, 6, or 8 pages onto a single sheet of A4/Letter paper.
-  - Generate booklet layouts, handout sheets, and cheat sheets.
-- **Status**: [ ] Planned
+  - Place 2, 4, 6, or 8 pages onto a single sheet of paper.
+  - Generate booklet layouts, handout sheets, and cheat sheets with optional hairline outlines.
+- **Status**: [x] Completed (2026-11-08)
 
 ### 3.3 ⚖️ Visual PDF Diff & Contract Comparator (`compare-pdf`)
-- **Engine**: Dual canvas pixel diffing (`pixelmatch`).
+- **Engine**: `js/core/compareEngine.js` using dual canvas rasterization & color distance pixel diffing.
+- **UI Controller**: `js/ui/compareTool.js` with dual dropzones, 3-panel comparative viewport, and page carousel.
 - **Capabilities**:
   - Compare two versions of a contract, architectural drawing, or proposal.
-  - Highlight additions in green and deletions in red side-by-side.
-- **Status**: [ ] Planned
+  - Highlights deletions in red (`#dc2626`) and additions in green (`#16a34a`) side-by-side with difference percentage stats.
+- **Status**: [x] Completed (2026-11-08)
 
 ---
 
@@ -198,6 +201,11 @@ All tools in this phase use our existing, verified stack (`pdf-lib`, `pdf.js`, `
 
 | Date | Phase | Feature / Task | Status | Commit / Notes |
 | :--- | :--- | :--- | :--- | :--- |
+| **2026-11-08** | **Phase 3** | PDF to Editable Word (`pdf-to-docx`) | Completed | In-browser OpenXML generator via JSZip, paragraph & heading flow |
+| **2026-11-08** | **Phase 3** | N-Up Multi-Page Imposition (`nup-pdf`) | Completed | 2-up, 4-up, 6-up, 8-up booklet/sheet layout engine via pdf-lib |
+| **2026-11-08** | **Phase 3** | Visual PDF Diff (`compare-pdf`) | Completed | Dual canvas pixel difference analyzer with color-coded add/delete map |
+| **2026-11-08** | **Phase 1** | Grayscale & Monochrome Print Optimizer (`grayscale-pdf`) | Completed | Luminosity Rec.601 conversion & B&W threshold slider |
+| **2026-11-08** | **Phase 1** | Form & Annotation Flattening (`flatten-pdf`) | Completed | Permanent AcroForm vector freezing for legal & tax submissions |
 | **2026-11-08** | **UI/UX** | Automated 10-Day Green "NEW" Feature Tag System | Completed | Automated client-side lifecycle: adds green tag to new features, auto-retires after 10 days |
 | **2026-11-08** | **Phase 2** | Client-Side OCR (`ocr-pdf`) | Completed | Tesseract.js v5 Wasm worker, multi-language, high-res PDF rendering |
 | **2026-11-08** | **Phase 2** | Irreversible PDF Redaction (`redact-pdf`) | Completed | Permanent stream-level pixel sanitization & underlying text incinerator |

@@ -1,5 +1,5 @@
 // Service Worker for iZeroPDF
-const CACHE_NAME = 'izero-pdf-v2.1.0';
+const CACHE_NAME = 'izero-pdf-v2.2.0';
 const STATIC_ASSETS = [
     '/',
     '/index.html',
@@ -36,6 +36,11 @@ const STATIC_ASSETS = [
     '/js/core/ocrEngine.js',
     '/js/core/redactEngine.js',
     '/js/core/bgRemovalEngine.js',
+    '/js/core/grayscaleEngine.js',
+    '/js/core/flattenEngine.js',
+    '/js/core/docxEngine.js',
+    '/js/core/nupEngine.js',
+    '/js/core/compareEngine.js',
     
     // JavaScript - UI Controllers
     '/js/ui/imageToPdf.js',
@@ -58,6 +63,11 @@ const STATIC_ASSETS = [
     '/js/ui/ocrTool.js',
     '/js/ui/redactTool.js',
     '/js/ui/bgRemovalTool.js',
+    '/js/ui/grayscaleTool.js',
+    '/js/ui/flattenTool.js',
+    '/js/ui/pdfToDocxTool.js',
+    '/js/ui/nupTool.js',
+    '/js/ui/compareTool.js',
     '/js/ui/rotateImageTool.js',
     '/js/ui/watermarkTool.js',
     

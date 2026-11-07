@@ -37,6 +37,13 @@ const Router = (function() {
         'pdf-to-jpg': { title: 'PDF to JPG', render: renderPdfToJpgTool },
         'image-converter': { title: 'Convert Images', render: renderImageConverter },
         'remove-bg': { title: 'Remove Background', render: renderBgRemovalTool },
+        'pdf-to-docx': { title: 'PDF to Word (.docx)', render: renderPdfToDocxTool },
+
+        // Print & Imposition
+        'grayscale-pdf': { title: 'Grayscale PDF', render: renderGrayscaleTool },
+        'flatten-pdf': { title: 'Flatten PDF Forms', render: renderFlattenTool },
+        'nup-pdf': { title: 'N-Up Imposition', render: renderNupTool },
+        'compare-pdf': { title: 'Compare PDF', render: renderCompareTool },
 
         // Image Editor
         'image-editor': { title: 'Image Editor', render: renderImageEditor }
