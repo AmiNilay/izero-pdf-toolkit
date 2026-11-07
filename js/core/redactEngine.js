@@ -18,8 +18,25 @@ const RedactEngine = (function() {
             throw new Error('Required PDF libraries are not loaded');
         }
 
+        // Safely extract bytes and clone independent copies so PDF.js worker transfer
+        // does not detach the buffer required by pdf-lib
+        let rawBytes;
+        if (pdfBuffer instanceof Uint8Array) {
+            rawBytes = pdfBuffer;
+        } else if (pdfBuffer instanceof ArrayBuffer) {
+            rawBytes = new Uint8Array(pdfBuffer);
+        } else if (pdfBuffer && typeof pdfBuffer.arrayBuffer === 'function') {
+            rawBytes = new Uint8Array(await pdfBuffer.arrayBuffer());
+        } else {
+            throw new Error('Invalid PDF data provided');
+        }
+
+        // Create independent copies
+        const pdfJsBytes = rawBytes.slice();
+        const pdfLibBytes = rawBytes.slice();
+
         // 1. Render the original page at high resolution (scale 2.0) via PDF.js
-        const loadingTask = pdfjsLib.getDocument({ data: pdfBuffer });
+        const loadingTask = pdfjsLib.getDocument({ data: pdfJsBytes });
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(pageNumber);
 
@@ -55,7 +72,7 @@ const RedactEngine = (function() {
         }
 
         // 4. In pdf-lib, load document and replace the target page with sanitized page
-        const pdfDoc = await PDFLib.PDFDocument.load(pdfBuffer, { ignoreEncryption: true });
+        const pdfDoc = await PDFLib.PDFDocument.load(pdfLibBytes, { ignoreEncryption: true });
         const pages = pdfDoc.getPages();
         const pageIndex = pageNumber - 1;
 

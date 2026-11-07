@@ -76,7 +76,8 @@ const OcrEngine = (function() {
             onProgress({ status: 'rendering_page', progress: 0.1 });
         }
 
-        const loadingTask = pdfjsLib.getDocument({ data: pdfBuffer });
+        const bufferCopy = (pdfBuffer instanceof Uint8Array ? pdfBuffer : new Uint8Array(pdfBuffer)).slice();
+        const loadingTask = pdfjsLib.getDocument({ data: bufferCopy });
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(pageNumber);
 
