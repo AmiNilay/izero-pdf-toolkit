@@ -5,10 +5,12 @@
 
 function renderPdfToDocxTool() {
     const container = document.getElementById('toolContent');
-    const home = document.getElementById('home');
-    if (home) home.style.display = 'none';
+    const pageHome = document.getElementById('page-home') || document.getElementById('home');
+    if (pageHome) pageHome.style.display = 'none';
     if (!container) return;
     container.style.display = 'block';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
 
     let currentFile = null;
     let docxBlob = null;
@@ -33,7 +35,7 @@ function renderPdfToDocxTool() {
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Select PDF to Convert to Word</h3>
                     <p style="font-size: 14px; opacity: 0.7; margin-bottom: 16px;">Zero server conversion. Native OpenXML reconstruction inside browser memory.</p>
                     <button class="btn btn-primary" type="button" id="browseBtn">Browse Files</button>
-                    <input type="file" id="docxFileInput" accept="application/pdf" style="display: none;">
+                    <input type="file" id="docxFileInput" accept=".pdf,application/pdf" style="display: none;">
                 </div>
 
                 <!-- Processing Panel -->

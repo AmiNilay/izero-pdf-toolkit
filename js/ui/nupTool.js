@@ -5,10 +5,12 @@
 
 function renderNupTool() {
     const container = document.getElementById('toolContent');
-    const home = document.getElementById('home');
-    if (home) home.style.display = 'none';
+    const pageHome = document.getElementById('page-home') || document.getElementById('home');
+    if (pageHome) pageHome.style.display = 'none';
     if (!container) return;
     container.style.display = 'block';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
 
     let currentFile = null;
     let pageCount = 0;
@@ -34,7 +36,7 @@ function renderNupTool() {
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Select PDF for Multi-Page Imposition</h3>
                     <p style="font-size: 14px; opacity: 0.7; margin-bottom: 16px;">Fast, private, in-browser layout generation without cloud servers.</p>
                     <button class="btn btn-primary" type="button" id="browseBtn">Browse Files</button>
-                    <input type="file" id="nupFileInput" accept="application/pdf" style="display: none;">
+                    <input type="file" id="nupFileInput" accept=".pdf,application/pdf" style="display: none;">
                 </div>
 
                 <!-- Imposition Settings Panel -->

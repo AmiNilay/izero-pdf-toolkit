@@ -4,10 +4,26 @@
   "description": "100% Offline PDF & Image Manipulation Toolkit. Completely private, no data leaves your device.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#7c3aed",
-  "theme_color": "#7c3aed",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait-primary",
   "categories": ["productivity", "utilities"],
+  "share_target": {
+    "action": "./?shared=1",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["application/pdf", "image/*"]
+        }
+      ]
+    }
+  },
   "icons": [
     {
       "src": "assets/icons/favicon_io/android-chrome-192x192.png",

@@ -5,10 +5,12 @@
 
 function renderCompareTool() {
     const container = document.getElementById('toolContent');
-    const home = document.getElementById('home');
-    if (home) home.style.display = 'none';
+    const pageHome = document.getElementById('page-home') || document.getElementById('home');
+    if (pageHome) pageHome.style.display = 'none';
     if (!container) return;
     container.style.display = 'block';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
 
     let fileA = null;
     let fileB = null;
@@ -39,8 +41,8 @@ function renderCompareTool() {
                         <span class="material-symbols-outlined" style="font-size: 40px; margin-bottom: 8px; display: block;">description</span>
                         <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Document A (Original)</h4>
                         <p id="labelA" style="font-size: 13px; opacity: 0.7; margin-bottom: 12px;">Drop original PDF here</p>
-                        <button class="btn btn-secondary btn-sm" type="button">Select File A</button>
-                        <input type="file" id="inputA" accept="application/pdf" style="display: none;">
+                        <button class="btn btn-secondary btn-sm" type="button" id="btnSelectA">Select File A</button>
+                        <input type="file" id="inputA" accept=".pdf,application/pdf" style="display: none;">
                     </div>
 
                     <!-- Dropzone B -->
@@ -48,8 +50,8 @@ function renderCompareTool() {
                         <span class="material-symbols-outlined" style="font-size: 40px; margin-bottom: 8px; display: block;">edit_document</span>
                         <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 4px;">Document B (Revised)</h4>
                         <p id="labelB" style="font-size: 13px; opacity: 0.7; margin-bottom: 12px;">Drop revised PDF here</p>
-                        <button class="btn btn-secondary btn-sm" type="button">Select File B</button>
-                        <input type="file" id="inputB" accept="application/pdf" style="display: none;">
+                        <button class="btn btn-secondary btn-sm" type="button" id="btnSelectB">Select File B</button>
+                        <input type="file" id="inputB" accept=".pdf,application/pdf" style="display: none;">
                     </div>
                 </div>
 
@@ -140,8 +142,13 @@ function renderCompareTool() {
         if (typeof Router !== 'undefined') Router.navigate('home');
     });
 
-    dropzoneA.addEventListener('click', () => inputA.click());
-    dropzoneB.addEventListener('click', () => inputB.click());
+    const btnSelectA = document.getElementById('btnSelectA');
+    const btnSelectB = document.getElementById('btnSelectB');
+
+    if (btnSelectA) btnSelectA.addEventListener('click', (e) => { e.stopPropagation(); inputA.click(); });
+    if (btnSelectB) btnSelectB.addEventListener('click', (e) => { e.stopPropagation(); inputB.click(); });
+    dropzoneA.addEventListener('click', (e) => { if (e.target !== btnSelectA) inputA.click(); });
+    dropzoneB.addEventListener('click', (e) => { if (e.target !== btnSelectB) inputB.click(); });
 
     inputA.addEventListener('change', (e) => {
         if (e.target.files && e.target.files[0]) {

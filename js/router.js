@@ -44,6 +44,7 @@ const Router = (function() {
         'flatten-pdf': { title: 'Flatten PDF Forms', render: renderFlattenTool },
         'nup-pdf': { title: 'N-Up Imposition', render: renderNupTool },
         'compare-pdf': { title: 'Compare PDF', render: renderCompareTool },
+        'batch-folder': { title: 'Batch Folder', render: renderBatchTool },
 
         // Image Editor
         'image-editor': { title: 'Image Editor', render: renderImageEditor }
@@ -231,6 +232,12 @@ const Router = (function() {
     function renderImageConverter() { showPage('tool'); if (typeof ImageConverterToolController !== 'undefined') ImageConverterToolController.render(); else showError('Image Converter tool not loaded'); }
     function renderImageEditor() { showPage('tool'); if (typeof ImageEditorToolController !== 'undefined') ImageEditorToolController.render(); else showError('Image Editor tool not loaded'); }
     function renderBgRemovalTool() { showPage('tool'); if (typeof BgRemovalToolController !== 'undefined') BgRemovalToolController.render(); else showError('Remove Background tool not loaded'); }
+    function renderPdfToDocxTool() { showPage('tool'); if (typeof window.renderPdfToDocxTool === 'function') window.renderPdfToDocxTool(); else showError('PDF to Word (.docx) tool not loaded'); }
+    function renderGrayscaleTool() { showPage('tool'); if (typeof window.renderGrayscaleTool === 'function') window.renderGrayscaleTool(); else showError('Grayscale PDF tool not loaded'); }
+    function renderFlattenTool() { showPage('tool'); if (typeof window.renderFlattenTool === 'function') window.renderFlattenTool(); else showError('Flatten PDF Forms tool not loaded'); }
+    function renderNupTool() { showPage('tool'); if (typeof window.renderNupTool === 'function') window.renderNupTool(); else showError('N-Up Imposition tool not loaded'); }
+    function renderCompareTool() { showPage('tool'); if (typeof window.renderCompareTool === 'function') window.renderCompareTool(); else showError('Compare PDF tool not loaded'); }
+    function renderBatchTool() { showPage('tool'); if (typeof window.renderBatchTool === 'function') window.renderBatchTool(); else showError('Batch Folder tool not loaded'); }
 
     return {
         init: init,

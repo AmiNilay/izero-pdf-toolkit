@@ -5,10 +5,12 @@
 
 function renderGrayscaleTool() {
     const container = document.getElementById('toolContent');
-    const home = document.getElementById('home');
-    if (home) home.style.display = 'none';
+    const pageHome = document.getElementById('page-home') || document.getElementById('home');
+    if (pageHome) pageHome.style.display = 'none';
     if (!container) return;
     container.style.display = 'block';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
 
     let currentFile = null;
     let originalSize = 0;
@@ -34,7 +36,7 @@ function renderGrayscaleTool() {
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Select or Drop PDF Document</h3>
                     <p style="font-size: 14px; opacity: 0.7; margin-bottom: 16px;">Files are processed 100% locally in your browser. Nothing is uploaded.</p>
                     <button class="btn btn-primary" type="button" id="browseBtn">Browse Files</button>
-                    <input type="file" id="grayscaleFileInput" accept="application/pdf" style="display: none;">
+                    <input type="file" id="grayscaleFileInput" accept=".pdf,application/pdf" style="display: none;">
                 </div>
 
                 <!-- Controls & Preview Panel (Hidden initially) -->

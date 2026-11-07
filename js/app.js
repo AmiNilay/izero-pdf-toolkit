@@ -247,7 +247,8 @@
         'flatten-pdf': '2026-11-08',
         'pdf-to-docx': '2026-11-08',
         'nup-pdf': '2026-11-08',
-        'compare-pdf': '2026-11-08'
+        'compare-pdf': '2026-11-08',
+        'batch-folder': '2026-11-08'
     };
 
     function initNewFeatureBadges() {

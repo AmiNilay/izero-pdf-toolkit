@@ -5,10 +5,12 @@
 
 function renderFlattenTool() {
     const container = document.getElementById('toolContent');
-    const home = document.getElementById('home');
-    if (home) home.style.display = 'none';
+    const pageHome = document.getElementById('page-home') || document.getElementById('home');
+    if (pageHome) pageHome.style.display = 'none';
     if (!container) return;
     container.style.display = 'block';
+    container.style.visibility = 'visible';
+    container.style.opacity = '1';
 
     let currentFile = null;
     let flattenedPdfBytes = null;
@@ -33,7 +35,7 @@ function renderFlattenTool() {
                     <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">Select PDF with Interactive Forms or Annotations</h3>
                     <p style="font-size: 14px; opacity: 0.7; margin-bottom: 16px;">100% private. Form values are locked in local browser memory without uploading.</p>
                     <button class="btn btn-primary" type="button" id="browseBtn">Browse Files</button>
-                    <input type="file" id="flattenFileInput" accept="application/pdf" style="display: none;">
+                    <input type="file" id="flattenFileInput" accept=".pdf,application/pdf" style="display: none;">
                 </div>
 
                 <!-- Inspection & Action Panel -->

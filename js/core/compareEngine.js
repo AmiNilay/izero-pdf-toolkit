@@ -9,12 +9,12 @@ const CompareEngine = (function() {
     /**
      * Renders a specific page of a PDF document to an HTML5 Canvas.
      */
-    async function renderPageToCanvas(pdfDoc, pageNum, scale = 1.5) {
+    async function renderPageToCanvas(pdfDoc, pageNum, scale = 1.2) {
         const page = await pdfDoc.getPage(pageNum);
         const viewport = page.getViewport({ scale: scale });
         const canvas = document.createElement('canvas');
-        canvas.width = viewport.width;
-        canvas.height = viewport.height;
+        canvas.width = Math.max(1, Math.floor(viewport.width));
+        canvas.height = Math.max(1, Math.floor(viewport.height));
         const ctx = canvas.getContext('2d');
 
         // Fill background white
@@ -124,7 +124,8 @@ const CompareEngine = (function() {
      */
     async function loadPdfDocument(file) {
         const arrayBuffer = file instanceof ArrayBuffer ? file : await file.arrayBuffer();
-        const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) });
+        const copy = new Uint8Array(arrayBuffer).slice();
+        const loadingTask = pdfjsLib.getDocument({ data: copy });
         return await loadingTask.promise;
     }
 
